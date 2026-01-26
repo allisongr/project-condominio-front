@@ -1,0 +1,139 @@
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.contacts-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.contacts-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.contacts-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.contacts-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.contacts-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.contacts-scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.contacts-scroll::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  cursor: pointer;
+  border-radius: 12px;
+  margin: 8px 10px;
+  transition: all 0.2s;
+  gap: 12px;
+}
+
+.contact-item:hover {
+  background: #f5f5f5;
+}
+
+.contact-item.active {
+  background: #d4edda;
+  border-left: 4px solid #28a745;
+}
+
+.contact-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.contact-avatar-wrapper {
+  position: relative;
+}
+
+.contact-avatar {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #667eea;
+  border-radius: 50%;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.online-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: #28a745;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.contact-preview {
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.new-chat-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #28a745;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding: 0;
+}
+
+.new-chat-btn:hover {
+  background: #218838;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  transform: scale(1.05);
+}
