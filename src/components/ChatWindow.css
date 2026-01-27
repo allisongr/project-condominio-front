@@ -192,6 +192,11 @@
   outline: none;
   transition: all 0.2s;
   background: #f9f9f9;
+  color: #333;
+}
+
+.chat-textarea::placeholder {
+  color: #999;
 }
 
 .chat-textarea:focus {

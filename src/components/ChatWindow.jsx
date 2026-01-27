@@ -91,6 +91,13 @@ export default function ChatWindow({ contacto, usuarioActual }) {
       // Función para procesar mensajes recibidos
       const handleMessageReceived = (data) => {
         console.log('✅ Mensaje recibido vía WebSocket:', data)
+        
+        // Ignorar mensajes que yo mismo envié (solo procesar mensajes del contacto)
+        if (data.remitente_id === usuarioActual.id) {
+          console.log('⏭️ Ignorando mensaje propio (ya está en la UI optimista)')
+          return
+        }
+        
         const nuevoMsg = {
           id: data.id,
           remitente_id: data.remitente_id,
@@ -99,13 +106,15 @@ export default function ChatWindow({ contacto, usuarioActual }) {
           fecha: new Date(data.fecha),
           leido: data.leido || false,
         }
-        setMensajes((prev) => [...prev, nuevoMsg])
         
-        // Guardar en localStorage
-        const storageKey = `chat_${usuarioActual.id}_${contacto.id}`
+        // Verificar si el mensaje ya existe (evitar duplicados)
         setMensajes((prev) => {
-          localStorage.setItem(storageKey, JSON.stringify(prev))
-          return prev
+          const existe = prev.some(msg => msg.id === data.id)
+          if (existe) {
+            console.log('⏭️ Mensaje duplicado, ignorando')
+            return prev
+          }
+          return [...prev, nuevoMsg]
         })
       }
 
@@ -185,44 +194,47 @@ export default function ChatWindow({ contacto, usuarioActual }) {
   const sendMessage = async () => {
     if (!nuevoMensaje.trim()) return
 
+    const mensajeTexto = nuevoMensaje
+    setNuevoMensaje('')
+
     try {
       setIsLoading(true)
 
-      // Crear mensaje local optimista
+      // Crear mensaje local optimista con ID temporal
+      const tempId = `temp-${Date.now()}-${Math.random()}`
       const newMsg = {
-        id: Date.now().toString(),
+        id: tempId,
         remitente_id: usuarioActual.id,
         destinatario_id: contacto.id,
-        contenido: nuevoMensaje,
+        contenido: mensajeTexto,
         fecha: new Date(),
         leido: false,
       }
 
-      setMensajes([...mensajes, newMsg])
-      setNuevoMensaje('')
+      setMensajes((prev) => [...prev, newMsg])
 
       // Enviar al backend
       const response = await axios.post('/api/chat/send', {
         remitente_id: usuarioActual.id,
         destinatario_id: contacto.id,
         id_depa: contacto.depa,
-        contenido: nuevoMensaje,
+        contenido: mensajeTexto,
         tipo: 'personal',
       })
 
-      // Actualizar con ID real del mensaje
-      if (response.data?.id) {
+      // Actualizar con ID real del mensaje de MongoDB
+      if (response.data?.data?.id) {
         setMensajes((prev) =>
           prev.map((msg) =>
-            msg.id === newMsg.id ? { ...msg, id: response.data.id } : msg
+            msg.id === tempId ? { ...msg, id: response.data.data.id } : msg
           )
         )
       }
     } catch (error) {
       console.error('Error sending message:', error)
       // Remover mensaje local en caso de error
-      setMensajes((prev) => prev.slice(0, -1))
-      setNuevoMensaje(nuevoMensaje) // Restaurar el texto
+      setMensajes((prev) => prev.filter(msg => !msg.id.toString().startsWith('temp-')))
+      setNuevoMensaje(mensajeTexto) // Restaurar el texto
     } finally {
       setIsLoading(false)
     }
@@ -301,7 +313,7 @@ export default function ChatWindow({ contacto, usuarioActual }) {
                 sendMessage()
               }
             }}
-            placeholder="Si tiene duda en algo mas avíseme"
+            placeholder="Escribe un mensaje..."
             className="chat-textarea"
           />
           <button
