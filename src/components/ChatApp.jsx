@@ -27,7 +27,10 @@ export default function ChatApp({ usuario, onLogout }) {
       setIsLoadingContactos(true)
       // Cargar contactos desde la API
       const response = await axios.get('/api/usuarios/contactos')
-      const contactosData = response.data || []
+      let contactosData = response.data || []
+      
+      // Filtrar para excluir al usuario actual
+      contactosData = contactosData.filter(c => c.id !== usuario.id)
       
       setContactos(contactosData)
       if (contactosData.length > 0) {
@@ -35,74 +38,7 @@ export default function ChatApp({ usuario, onLogout }) {
       }
     } catch (error) {
       console.error('Error loading contactos:', error)
-      // Fallback a datos de ejemplo en caso de error
-      const mockContactos = [
-        {
-          id: 1,
-          nombre: 'Fernando',
-          apellido: 'Godoy',
-          mensaje: 'Non in semper nisl adipiscing s...',
-          online: true,
-          depa: 101,
-          email: 'fernando@example.com',
-        },
-        {
-          id: 2,
-          nombre: 'Monica',
-          apellido: 'Martinez',
-          mensaje: 'Non in semper nisl adipiscing s...',
-          online: false,
-          depa: 102,
-          email: 'monica@example.com',
-        },
-        {
-          id: 3,
-          nombre: 'Lorenzo',
-          apellido: 'Herrera',
-          mensaje: 'Non in semper nisl adipiscing s...',
-          online: true,
-          depa: 103,
-          email: 'lorenzo@example.com',
-        },
-        {
-          id: 4,
-          nombre: 'Francisco',
-          apellido: 'González',
-          mensaje: 'Non in semper nisl adipiscing s...',
-          online: false,
-          depa: 104,
-          email: 'francisco@example.com',
-        },
-        {
-          id: 5,
-          nombre: 'Lucia',
-          apellido: 'Castañeda',
-          mensaje: 'Non in semper nisl adipiscing s...',
-          online: true,
-          depa: 105,
-          email: 'lucia@example.com',
-        },
-        {
-          id: 6,
-          nombre: 'Maria',
-          apellido: 'Perez',
-          mensaje: 'Non in semper nisl adipiscing s...',
-          online: false,
-          depa: 106,
-          email: 'maria@example.com',
-        },
-        {
-          id: 7,
-          nombre: 'Carlos',
-          apellido: 'Guadalupe',
-          mensaje: 'Non in semper nisl adipiscing s...',
-          online: true,
-          depa: 107,
-          email: 'carlos@example.com',
-        },
-      ]
-      setContactos(mockContactos)
-      setSelectedContact(mockContactos[0])
+      setContactos([])
     } finally {
       setIsLoadingContactos(false)
     }
@@ -110,7 +46,7 @@ export default function ChatApp({ usuario, onLogout }) {
 
   return (
     <div className="chat-app">
-      <NavBar usuario={usuario} />
+      <NavBar usuario={usuario} onLogout={onLogout} />
       
       <div className="chat-container-main">
         <div className="contacts-panel">
@@ -139,16 +75,8 @@ export default function ChatApp({ usuario, onLogout }) {
         </div>
       </div>
       
-      <div style={{ padding: '10px', borderTop: '1px solid #ccc', textAlign: 'center' }}>
-        <span style={{ marginRight: '15px' }}>
-          Hola, {usuario?.nombre} {usuario?.apellido}
-        </span>
-        <button
-          onClick={onLogout}
-          style={{ padding: '5px 15px', cursor: 'pointer' }}
-        >
-          Salir
-        </button>
+      <div className="chat-footer">
+        <span className="copyright">© 2026 Condominio Chat. All rights reserved.</span>
       </div>
     </div>
   )

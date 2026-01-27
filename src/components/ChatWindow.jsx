@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { FiMoreVertical, FiSend } from 'react-icons/fi'
 import axios from 'axios'
 import './ChatWindow.css'
+import MessageBubble from './MessageBubble'
+import Avatar from './Avatar'
 
 export default function ChatWindow({ contacto, usuarioActual }) {
   const [mensajes, setMensajes] = useState([])
@@ -123,7 +125,7 @@ export default function ChatWindow({ contacto, usuarioActual }) {
   }
 
   const getAvatarColor = (id) => {
-    const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a']
+    const colors = ['#2d7a6a', '#4a9b7f', '#5fa896', '#3a8f73', '#2d6b5e', '#418069', '#5ba885']
     return colors[id % colors.length]
   }
 
@@ -241,26 +243,18 @@ export default function ChatWindow({ contacto, usuarioActual }) {
               </div>
             ) : (
               mensajes.map((mensaje) => (
-                <div
+                <MessageBubble
                   key={mensaje.id}
-                  className={`message ${
-                    mensaje.remitente_id === usuarioActual.id ? 'sent' : 'received'
-                  }`}
-                >
-                  <div className="message-bubble">
-                    <p className="message-text">{mensaje.contenido}</p>
-                    <span className="message-time">{formatTime(mensaje.fecha)}</span>
-                  </div>
-                </div>
+                  mensaje={mensaje}
+                  isOwn={mensaje.remitente_id === usuarioActual.id}
+                />
               ))
             )}
             {isTyping && (
-              <div className="message received">
-                <div className="message-bubble typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
+              <div className="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
               </div>
             )}
           </>

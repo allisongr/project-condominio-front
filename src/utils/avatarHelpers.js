@@ -11,14 +11,14 @@ export const getInitials = (nombre) => {
 
 // Colores para avatares
 const colors = [
-  '#667eea',
-  '#764ba2',
-  '#f093fb',
-  '#4facfe',
-  '#00f2fe',
-  '#43e97b',
-  '#fa709a',
-  '#feca57',
+  '#2d7a6a',
+  '#4a9b7f',
+  '#5fa896',
+  '#3a8f73',
+  '#2d6b5e',
+  '#418069',
+  '#5ba885',
+  '#6eb699',
 ]
 
 export const getAvatarColor = (id) => {

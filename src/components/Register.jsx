@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
+import logoPequeno from '../assets/imgs/logo-pequeno.jpg'
+import './Register.css'
 
 export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
   const [nombre, setNombre] = useState('')
@@ -45,141 +47,121 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
     }
   }
 
-  const inputStyle = { 
-    width: '100%', 
-    padding: '10px', 
-    marginTop: '5px', 
-    boxSizing: 'border-box', 
-    border: '1px solid #ddd', 
-    borderRadius: '4px',
-    color: '#333',
-    fontSize: '14px'
-  }
-  
-  const labelStyle = { 
-    display: 'block', 
-    marginBottom: '5px', 
-    color: '#333', 
-    fontWeight: 'bold',
-    fontSize: '14px'
-  }
-
   return (
-    <div style={{ padding: '40px', maxWidth: '400px', margin: '50px auto', fontFamily: 'Arial, sans-serif', color: '#333' }}>
-      <h2 style={{ color: '#333', marginBottom: '30px' }}>Registrarse</h2>
-      {error && <p style={{ color: 'red', marginBottom: '15px', padding: '10px', backgroundColor: '#ffe6e6', borderRadius: '4px' }}>{error}</p>}
-
-      <form onSubmit={handleRegister}>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={labelStyle}>Nombre:</label>
-          <input
-            type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            required
-            style={inputStyle}
-            placeholder="Tu nombre"
-          />
+    <div className="register-container">
+      <div className="register-box">
+        <div className="register-header">
+          <img src={logoPequeno} alt="Logo" className="register-logo" />
+          <h1>Crear Cuenta</h1>
+          <p>Completa el formulario para registrarte</p>
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label style={labelStyle}>Apellido Paterno:</label>
-          <input
-            type="text"
-            value={apellido_p}
-            onChange={(e) => setApellidoP(e.target.value)}
-            required
-            style={inputStyle}
-            placeholder="Apellido paterno"
-          />
+        {error && <div className="register-error-message">{error}</div>}
+
+        <form className="register-form" onSubmit={handleRegister}>
+          <div className="register-form-group">
+            <label htmlFor="nombre">Nombre</label>
+            <input
+              id="nombre"
+              type="text"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+              placeholder="Tu nombre"
+            />
+          </div>
+
+          <div className="register-form-group">
+            <label htmlFor="apellido_p">Apellido Paterno</label>
+            <input
+              id="apellido_p"
+              type="text"
+              value={apellido_p}
+              onChange={(e) => setApellidoP(e.target.value)}
+              required
+              placeholder="Apellido paterno"
+            />
+          </div>
+
+          <div className="register-form-group">
+            <label htmlFor="apellido_m">Apellido Materno</label>
+            <input
+              id="apellido_m"
+              type="text"
+              value={apellido_m}
+              onChange={(e) => setApellidoM(e.target.value)}
+              placeholder="Apellido materno"
+            />
+          </div>
+
+          <div className="register-form-group">
+            <label htmlFor="celular">Celular</label>
+            <input
+              id="celular"
+              type="tel"
+              value={celular}
+              onChange={(e) => setCelular(e.target.value)}
+              placeholder="Número de celular"
+            />
+          </div>
+
+          <div className="register-form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="correo@example.com"
+            />
+          </div>
+
+          <div className="register-form-group">
+            <label htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div className="register-form-group">
+            <label htmlFor="passwordConfirm">Confirmar Contraseña</label>
+            <input
+              id="passwordConfirm"
+              type="password"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              required
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="register-btn"
+          >
+            {loading ? 'Registrando...' : 'Registrarse'}
+          </button>
+        </form>
+
+        <div className="register-footer">
+          <p>
+            ¿Ya tienes cuenta?{' '}
+            <button
+              onClick={onSwitchToLogin}
+              className="login-link"
+            >
+              Inicia sesión aquí
+            </button>
+          </p>
         </div>
-
-        <div style={{ marginBottom: '12px' }}>
-          <label style={labelStyle}>Apellido Materno:</label>
-          <input
-            type="text"
-            value={apellido_m}
-            onChange={(e) => setApellidoM(e.target.value)}
-            style={inputStyle}
-            placeholder="Apellido materno"
-          />
-        </div>
-
-        <div style={{ marginBottom: '12px' }}>
-          <label style={labelStyle}>Celular:</label>
-          <input
-            type="tel"
-            value={celular}
-            onChange={(e) => setCelular(e.target.value)}
-            style={inputStyle}
-            placeholder="Número de celular"
-          />
-        </div>
-
-        <div style={{ marginBottom: '12px' }}>
-          <label style={labelStyle}>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={inputStyle}
-            placeholder="correo@example.com"
-          />
-        </div>
-
-        <div style={{ marginBottom: '12px' }}>
-          <label style={labelStyle}>Contraseña:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={inputStyle}
-            placeholder="••••••••"
-          />
-        </div>
-
-        <div style={{ marginBottom: '20px' }}>
-          <label style={labelStyle}>Confirmar Contraseña:</label>
-          <input
-            type="password"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-            required
-            style={inputStyle}
-            placeholder="••••••••"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ 
-            padding: '12px 20px', 
-            cursor: loading ? 'not-allowed' : 'pointer',
-            width: '100%',
-            backgroundColor: loading ? '#ccc' : '#28a745',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            fontSize: '16px',
-            fontWeight: 'bold'
-          }}
-        >
-          {loading ? 'Registrando...' : 'Registrarse'}
-        </button>
-      </form>
-
-      <p style={{ marginTop: '20px', textAlign: 'center', color: '#666', fontSize: '14px' }}>
-        ¿Ya tienes cuenta?{' '}
-        <button
-          onClick={onSwitchToLogin}
-          style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', textDecoration: 'underline', fontWeight: 'bold' }}
-        >
-          Inicia sesión aquí
-        </button>
-      </p>
+      </div>
     </div>
   )
 }
