@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
-import logoPequeno from '../assets/imgs/logo-pequeno.jpg'
+import logoCompleto from '../assets/imgs/logo-completo.jpg'
 import './Login.css'
 
 export default function Login({ onLoginSuccess, onSwitchToRegister }) {
@@ -36,8 +36,7 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
     <div className="login-container">
       <div className="login-box">
         <div className="login-header">
-          <img src={logoPequeno} alt="Logo" className="login-logo" />
-          <h1>Condominio Chat</h1>
+          <img src={logoCompleto} alt="Logo" className="login-logo" />
           <p>Inicia sesión para continuar</p>
         </div>
 

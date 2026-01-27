@@ -47,10 +47,25 @@
   color: #333;
 }
 
+.contact-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.contact-rol {
+  font-size: 12px;
+  color: #2d7a6a;
+  background: rgba(45, 122, 106, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
 .contact-status {
   font-size: 12px;
   color: #999;
-  margin-top: 2px;
 }
 
 .chat-menu-btn {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
-import logoPequeno from '../assets/imgs/logo-pequeno.jpg'
+import logoCompleto from '../assets/imgs/logo-completo.jpg'
 import './Register.css'
 
 export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
@@ -51,8 +51,7 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
     <div className="register-container">
       <div className="register-box">
         <div className="register-header">
-          <img src={logoPequeno} alt="Logo" className="register-logo" />
-          <h1>Crear Cuenta</h1>
+          <img src={logoCompleto} alt="Logo" className="register-logo" />
           <p>Completa el formulario para registrarte</p>
         </div>
 

@@ -221,9 +221,12 @@ export default function ChatWindow({ contacto, usuarioActual }) {
           </div>
           <div className="contact-header-details">
             <h2>{`${contacto.nombre} ${contacto.apellido}`}</h2>
-            <span className="contact-status">
-              {contacto.online ? 'En línea' : 'Fuera de línea'}
-            </span>
+            <div className="contact-header-meta">
+              {contacto.rol && <span className="contact-rol">{contacto.rol}</span>}
+              <span className="contact-status">
+                {contacto.online ? 'En línea' : 'Fuera de línea'}
+              </span>
+            </div>
           </div>
         </div>
         <button className="chat-menu-btn" title="Más opciones">

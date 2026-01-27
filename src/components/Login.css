@@ -10,7 +10,7 @@
 
 .login-box {
   background: white;
-  padding: 60px 40px;
+  padding: 0px 40px 40px 40px;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(45, 122, 106, 0.2);
   max-width: 450px;
@@ -19,13 +19,13 @@
 
 .login-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 5px;
 }
 
 .login-logo {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 20px;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto 0px;
   display: block;
   border-radius: 12px;
   object-fit: contain;
