@@ -66,10 +66,12 @@ export default function ChatWindow({ contacto, usuarioActual }) {
           id_depa: contacto.depa,
           contacto_id: contacto.id,
           usuario_id: usuarioActual.id,
+          per_page: 200,
         },
         timeout: 5000,
       })
       console.log('Mensajes cargados desde API:', response.data)
+      console.log('Primer mensaje:', response.data[0])
       if (response.data && Array.isArray(response.data)) {
         setMensajes(response.data)
       }
