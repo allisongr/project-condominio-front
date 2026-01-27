@@ -1,34 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
+import ChatApp from './components/ChatApp'
+import Login from './components/Login'
+import Register from './components/Register'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [usuario, setUsuario] = useState(null)
+  const [view, setView] = useState('login') // 'login', 'register', or 'chat'
+
+  useEffect(() => {
+    // Verificar si hay usuario guardado en localStorage
+    const usuarioGuardado = localStorage.getItem('usuario')
+    if (usuarioGuardado) {
+      setUsuario(JSON.parse(usuarioGuardado))
+      setView('chat')
+    }
+  }, [])
+
+  const handleLoginSuccess = (usuarioData) => {
+    setUsuario(usuarioData)
+    setView('chat')
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('usuario')
+    localStorage.removeItem('token')
+    setUsuario(null)
+    setView('login')
+  }
+
+  if (!usuario) {
+    return (
+      <div className="app">
+        {view === 'login' ? (
+          <Login
+            onLoginSuccess={handleLoginSuccess}
+            onSwitchToRegister={() => setView('register')}
+          />
+        ) : (
+          <Register
+            onRegisterSuccess={handleLoginSuccess}
+            onSwitchToLogin={() => setView('login')}
+          />
+        )}
+      </div>
+    )
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="app">
+      <ChatApp usuario={usuario} onLogout={handleLogout} />
+    </div>
   )
 }
 
