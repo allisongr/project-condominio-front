@@ -14,9 +14,21 @@ export default function ChatWindow({ contacto, usuarioActual }) {
 
   axios.defaults.baseURL = 'http://localhost:8000'
 
-  // Cargar mensajes cuando cambia el contacto
+  // Cargar mensajes desde localStorage o API
   useEffect(() => {
     if (contacto?.id) {
+      // Primero, intentar cargar desde localStorage
+      const storageKey = `chat_${usuarioActual.id}_${contacto.id}`
+      const storedMensajes = localStorage.getItem(storageKey)
+      if (storedMensajes) {
+        try {
+          setMensajes(JSON.parse(storedMensajes))
+        } catch (e) {
+          console.error('Error parsing stored messages:', e)
+        }
+      }
+      
+      // Luego, intentar actualizar desde la API en background
       loadMessages()
       setupWebSockets()
     }
@@ -33,6 +45,14 @@ export default function ChatWindow({ contacto, usuarioActual }) {
     scrollToBottom()
   }, [mensajes])
 
+  // Guardar mensajes en localStorage
+  useEffect(() => {
+    if (mensajes.length > 0 && contacto?.id && usuarioActual?.id) {
+      const storageKey = `chat_${usuarioActual.id}_${contacto.id}`
+      localStorage.setItem(storageKey, JSON.stringify(mensajes))
+    }
+  }, [mensajes, contacto?.id, usuarioActual?.id])
+
   // Cargar mensajes desde la API
   const loadMessages = async () => {
     try {
@@ -41,28 +61,17 @@ export default function ChatWindow({ contacto, usuarioActual }) {
         params: {
           id_depa: contacto.depa,
           contacto_id: contacto.id,
+          usuario_id: usuarioActual.id,
         },
+        timeout: 5000,
       })
-      setMensajes(response.data || [])
+      console.log('Mensajes cargados desde API:', response.data)
+      if (response.data && Array.isArray(response.data)) {
+        setMensajes(response.data)
+      }
     } catch (error) {
-      console.error('Error loading messages:', error)
-      // Si hay error, mostrar datos de ejemplo
-      setMensajes([
-        {
-          id: '1',
-          remitente_id: contacto.id,
-          contenido: 'Hola!',
-          fecha: new Date(Date.now() - 5 * 60000),
-          leido: true,
-        },
-        {
-          id: '2',
-          remitente_id: usuarioActual.id,
-          contenido: 'Hola',
-          fecha: new Date(Date.now() - 4 * 60000),
-          leido: true,
-        },
-      ])
+      console.error('Error loading messages from API:', error)
+      // No hacer nada, mantener los mensajes del localStorage
     } finally {
       setIsLoadingMessages(false)
     }

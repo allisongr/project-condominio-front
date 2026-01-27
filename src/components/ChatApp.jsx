@@ -5,16 +5,15 @@ import ChatWindow from './ChatWindow'
 import ContactList from './ContactList'
 import NavBar from './NavBar'
 
-export default function ChatApp() {
+export default function ChatApp({ usuario, onLogout }) {
   const [contactos, setContactos] = useState([])
   const [selectedContact, setSelectedContact] = useState(null)
   const [isLoadingContactos, setIsLoadingContactos] = useState(true)
-  const [usuarioActual] = useState({
-    id: 999,
-    nombre: 'Laura',
-    rol: 'Administrator',
-    apellido: 'García',
-  })
+
+  // Si no hay usuario, no renderizar
+  if (!usuario) {
+    return <div>Cargando...</div>
+  }
 
   axios.defaults.baseURL = 'http://localhost:8000'
 
@@ -111,7 +110,7 @@ export default function ChatApp() {
 
   return (
     <div className="chat-app">
-      <NavBar usuario={usuarioActual} />
+      <NavBar usuario={usuario} />
       
       <div className="chat-container-main">
         <div className="contacts-panel">
@@ -130,7 +129,7 @@ export default function ChatApp() {
           {selectedContact ? (
             <ChatWindow
               contacto={selectedContact}
-              usuarioActual={usuarioActual}
+              usuarioActual={usuario}
             />
           ) : (
             <div className="no-contact-selected">
@@ -139,6 +138,19 @@ export default function ChatApp() {
           )}
         </div>
       </div>
+      
+      <div style={{ padding: '10px', borderTop: '1px solid #ccc', textAlign: 'center' }}>
+        <span style={{ marginRight: '15px' }}>
+          Hola, {usuario?.nombre} {usuario?.apellido}
+        </span>
+        <button
+          onClick={onLogout}
+          style={{ padding: '5px 15px', cursor: 'pointer' }}
+        >
+          Salir
+        </button>
+      </div>
     </div>
   )
 }
+
