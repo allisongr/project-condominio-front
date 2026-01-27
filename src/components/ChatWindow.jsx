@@ -30,8 +30,10 @@ export default function ChatWindow({ contacto, usuarioActual }) {
         }
       }
       
-      // Luego, intentar actualizar desde la API en background
+      // Luego, intentar actualizar desde la API
       loadMessages()
+      
+      // Escuchar eventos en tiempo real con WebSocket
       setupWebSockets()
     }
 
@@ -84,35 +86,56 @@ export default function ChatWindow({ contacto, usuarioActual }) {
     if (!window.Echo) return
 
     try {
-      // Escuchar nuevos mensajes
-      window.Echo.private(`chat.${usuarioActual.id}.${contacto.id}`).listen(
-        'MensajeEnviado',
-        (data) => {
-          const nuevoMsg = {
-            id: data.id,
-            remitente_id: data.remitente_id,
-            destinatario_id: data.destinatario_id,
-            contenido: data.contenido,
-            fecha: new Date(data.fecha),
-            leido: data.leido || false,
-          }
-          setMensajes((prev) => [...prev, nuevoMsg])
+      // Función para procesar mensajes recibidos
+      const handleMessageReceived = (data) => {
+        console.log('✅ Mensaje recibido vía WebSocket:', data)
+        const nuevoMsg = {
+          id: data.id,
+          remitente_id: data.remitente_id,
+          destinatario_id: data.destinatario_id,
+          contenido: data.contenido,
+          fecha: new Date(data.fecha),
+          leido: data.leido || false,
         }
-      )
+        setMensajes((prev) => [...prev, nuevoMsg])
+        
+        // Guardar en localStorage
+        const storageKey = `chat_${usuarioActual.id}_${contacto.id}`
+        setMensajes((prev) => {
+          localStorage.setItem(storageKey, JSON.stringify(prev))
+          return prev
+        })
+      }
 
-      // Escuchar indicadores de escritura
-      window.Echo.private(`typing.${usuarioActual.id}.${contacto.id}`).listen(
-        'UsuarioEscribiendo',
-        (data) => {
-          if (data.usuario_id !== usuarioActual.id) {
-            setIsTyping(true)
-            // Limpiar el indicador después de 1 segundo
-            setTimeout(() => setIsTyping(false), 1000)
-          }
+      // Escuchar en canal directo: cuando yo envío un mensaje
+      const channel1 = window.Echo.private(`chat.${usuarioActual.id}.${contacto.id}`)
+      
+      // Bind to the underlying Pusher channel to see ALL events
+      channel1.subscription.bind_global((eventName, data) => {
+        console.log('🌍 Global event received on channel 1:', eventName, data)
+        if (eventName === 'mensaje-enviado' || eventName === '.mensaje-enviado') {
+          handleMessageReceived(data)
         }
-      )
+      })
+      
+      console.log(`✅ Subscribed to channel: private-chat.${usuarioActual.id}.${contacto.id}`)
+
+      // Escuchar en canal inverso: cuando el otro usuario envía un mensaje
+      const channel2 = window.Echo.private(`chat.${contacto.id}.${usuarioActual.id}`)
+      
+      // Bind to the underlying Pusher channel to see ALL events
+      channel2.subscription.bind_global((eventName, data) => {
+        console.log('🌍 Global event received on channel 2:', eventName, data)
+        if (eventName === 'mensaje-enviado' || eventName === '.mensaje-enviado') {
+          handleMessageReceived(data)
+        }
+      })
+      
+      console.log(`✅ Subscribed to channel: private-chat.${contacto.id}.${usuarioActual.id}`)
+
+      console.log(`✅ WebSocket listeners set up for channels: chat.${usuarioActual.id}.${contacto.id} and chat.${contacto.id}.${usuarioActual.id}`)
     } catch (error) {
-      console.error('Error setting up WebSockets:', error)
+      console.error('❌ Error setting up WebSockets:', error)
     }
   }
 
@@ -138,18 +161,18 @@ export default function ChatWindow({ contacto, usuarioActual }) {
       clearTimeout(typingTimeoutRef.current)
     }
 
-    // Enviar indicador de escritura
-    try {
-      if (window.Echo && e.target.value.length > 0) {
-        axios.post('/api/chat/typing', {
-          usuario_id: usuarioActual.id,
-          destinatario_id: contacto.id,
-          id_depa: contacto.depa,
-        })
-      }
-    } catch (error) {
-      console.error('Error sending typing indicator:', error)
-    }
+    // TODO: Enviar indicador de escritura (disabled for now)
+    // try {
+    //   if (window.Echo && e.target.value.length > 0) {
+    //     axios.post('/api/chat/typing', {
+    //       usuario_id: usuarioActual.id,
+    //       destinatario_id: contacto.id,
+    //       id_depa: contacto.depa,
+    //     })
+    //   }
+    // } catch (error) {
+    //   console.error('Error sending typing indicator:', error)
+    // }
 
     // Detener indicador después de 1 segundo de inactividad
     typingTimeoutRef.current = setTimeout(() => {
