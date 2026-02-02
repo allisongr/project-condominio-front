@@ -25,11 +25,15 @@ export default function ChatApp({ usuario, onLogout }) {
   const loadContactos = async () => {
     try {
       setIsLoadingContactos(true)
-      // Cargar contactos desde la API
-      const response = await axios.get('/api/usuarios/contactos')
+      // Cargar contactos desde la API, pasando el usuario actual
+      const response = await axios.get('/api/usuarios/contactos', {
+        params: {
+          usuario_actual_id: usuario.id
+        }
+      })
       let contactosData = response.data || []
       
-      // Filtrar para excluir al usuario actual
+      // Filtrar para excluir al usuario actual (segunda capa de seguridad)
       contactosData = contactosData.filter(c => c.id !== usuario.id)
       
       setContactos(contactosData)

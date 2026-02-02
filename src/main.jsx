@@ -25,13 +25,12 @@ window.Echo = new Echo({
     broadcaster: 'pusher',
     key: 'websocket-key',
     cluster: 'mt1',
-    wsHost: '127.0.0.1',
+    wsHost: 'localhost',
     wsPort: 8080,
-    wssPort: 8080,
     forceTLS: false,
     encrypted: false,
     disableStats: true,
-    enabledTransports: ['ws', 'wss'],
+    enabledTransports: ['ws'],
     authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
     auth: {
         headers: {
