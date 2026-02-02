@@ -3,7 +3,7 @@ import { useState } from 'react'
 import logoPequeno from '../assets/imgs/logo-pequeno.jpg'
 import './NavBar.css'
 
-export default function NavBar({ usuario, onLogout }) {
+export default function NavBar({ usuario, onLogout, hasUnreadMessages = false }) {
   const [showDropdown, setShowDropdown] = useState(false)
 
   const getInitials = (nombre, apellido) => {
@@ -36,6 +36,7 @@ export default function NavBar({ usuario, onLogout }) {
       <div className="navbar-right">
         <button className="notification-btn" title="Notificaciones">
           <FiBell size={20} />
+          {hasUnreadMessages && <span className="notification-badge"></span>}
         </button>
         <div className="user-profile-container">
           <button 

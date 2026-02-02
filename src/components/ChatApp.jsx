@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import './ChatApp.css'
 import ChatWindow from './ChatWindow'
@@ -9,6 +9,13 @@ export default function ChatApp({ usuario, onLogout }) {
   const [contactos, setContactos] = useState([])
   const [selectedContact, setSelectedContact] = useState(null)
   const [isLoadingContactos, setIsLoadingContactos] = useState(true)
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false)
+  const selectedContactRef = useRef(null)
+
+  // Mantener la referencia actualizada
+  useEffect(() => {
+    selectedContactRef.current = selectedContact
+  }, [selectedContact])
 
   // Si no hay usuario, no renderizar
   if (!usuario) {
@@ -21,6 +28,70 @@ export default function ChatApp({ usuario, onLogout }) {
   useEffect(() => {
     loadContactos()
   }, [])
+
+  // Configurar WebSocket después de cargar contactos
+  useEffect(() => {
+    console.log('🔍 useEffect notificaciones ejecutado', { contactosLength: contactos.length, contactos })
+    if (contactos.length > 0) {
+      console.log('✅ Llamando a setupWebSocketNotifications')
+      setupWebSocketNotifications()
+    } else {
+      console.log('❌ No hay contactos para configurar notificaciones')
+    }
+  }, [contactos])
+
+  const setupWebSocketNotifications = () => {
+    if (!window.Echo || !usuario?.id) {
+      console.log('❌ No se puede configurar notificaciones - Echo o usuario no disponible')
+      return
+    }
+
+    console.log(`🔔 Configurando notificaciones para usuario ${usuario.id}`)
+    console.log(`🔔 Contactos a escuchar:`, contactos.map(c => c.id))
+
+    // Escuchar mensajes en canales privados para este usuario
+    contactos.forEach(contacto => {
+      const channelName = `chat.${contacto.id}.${usuario.id}`
+      console.log(`🔔 Suscribiendo a canal de notificación: ${channelName}`)
+      
+      // Canal para mensajes que me envían
+      const channel = window.Echo.private(channelName)
+      
+      // Usar bind_global para capturar todos los eventos
+      channel.subscription.bind_global((eventName, data) => {
+        console.log(`🔔 Evento global recibido en ${channelName}:`, eventName, data)
+        
+        if (eventName === 'mensaje-enviado' || eventName === '.mensaje-enviado') {
+          console.log('📩 Nuevo mensaje recibido (notificación):', data)
+          console.log('Contacto seleccionado actual:', selectedContactRef.current?.id)
+          console.log('Remitente del mensaje:', data.remitente_id)
+          console.log('Destinatario del mensaje:', data.destinatario_id)
+          console.log('Usuario actual:', usuario.id)
+          
+          // Solo mostrar notificación si:
+          // 1. YO soy el destinatario del mensaje (no el remitente)
+          // 2. El mensaje NO es del contacto actualmente seleccionado
+          const soyDestinatario = data.destinatario_id === usuario.id
+          const esDiferenteAlChatActual = !selectedContactRef.current || selectedContactRef.current.id !== data.remitente_id
+          
+          if (soyDestinatario && esDiferenteAlChatActual) {
+            console.log('✅ Mostrando notificación - mensaje de otro contacto')
+            setHasUnreadMessages(true)
+          } else {
+            console.log('⏭️ No mostrar notificación:', { soyDestinatario, esDiferenteAlChatActual })
+          }
+        }
+      })
+    })
+
+    console.log(`✅ Escuchando notificaciones para usuario ${usuario.id}`)
+  }
+
+  const handleSelectContact = (contact) => {
+    setSelectedContact(contact)
+    // Al seleccionar un contacto, quitar la notificación
+    setHasUnreadMessages(false)
+  }
 
   const loadContactos = async () => {
     try {
@@ -36,6 +107,8 @@ export default function ChatApp({ usuario, onLogout }) {
       // Filtrar para excluir al usuario actual (segunda capa de seguridad)
       contactosData = contactosData.filter(c => c.id !== usuario.id)
       
+      console.log(`👥 Contactos cargados para usuario ${usuario.id}:`, contactosData.map(c => `${c.nombre} (ID: ${c.id})`))
+      
       setContactos(contactosData)
       if (contactosData.length > 0) {
         setSelectedContact(contactosData[0])
@@ -50,7 +123,7 @@ export default function ChatApp({ usuario, onLogout }) {
 
   return (
     <div className="chat-app">
-      <NavBar usuario={usuario} onLogout={onLogout} />
+      <NavBar usuario={usuario} onLogout={onLogout} hasUnreadMessages={hasUnreadMessages} />
       
       <div className="chat-container-main">
         <div className="contacts-panel">
@@ -60,7 +133,7 @@ export default function ChatApp({ usuario, onLogout }) {
             <ContactList
               contactos={contactos}
               selectedContact={selectedContact}
-              onSelectContact={setSelectedContact}
+              onSelectContact={handleSelectContact}
             />
           )}
         </div>

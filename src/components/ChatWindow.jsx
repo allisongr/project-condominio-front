@@ -13,12 +13,21 @@ export default function ChatWindow({ contacto, usuarioActual }) {
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef(null)
   const typingTimeoutRef = useRef(null)
+  const contactoRef = useRef(contacto)
+
+  // Mantener la referencia del contacto actualizada
+  useEffect(() => {
+    contactoRef.current = contacto
+  }, [contacto])
 
   axios.defaults.baseURL = 'http://localhost:8000'
 
   // Cargar mensajes desde localStorage o API
   useEffect(() => {
     if (contacto?.id) {
+      // Limpiar mensajes anteriores
+      setMensajes([])
+      
       // Primero, intentar cargar desde localStorage
       const storageKey = `chat_${usuarioActual.id}_${contacto.id}`
       const storedMensajes = localStorage.getItem(storageKey)
@@ -38,10 +47,9 @@ export default function ChatWindow({ contacto, usuarioActual }) {
     }
 
     return () => {
-      // Limpiar listeners de WebSocket al desmontar
-      if (window.Echo) {
-        window.Echo.leave(`chat.${usuarioActual.id}`)
-      }
+      // No desuscribir canales - otros componentes pueden estar usando los mismos canales
+      // Los listeners se reemplazan automáticamente cuando se configura el siguiente contacto
+      console.log(`✅ Cambiando de contacto - los listeners se actualizarán`)
     }
   }, [contacto?.id])
 
@@ -91,10 +99,22 @@ export default function ChatWindow({ contacto, usuarioActual }) {
       // Función para procesar mensajes recibidos
       const handleMessageReceived = (data) => {
         console.log('✅ Mensaje recibido vía WebSocket:', data)
+        console.log('📍 Contacto actual:', contactoRef.current?.id, contactoRef.current?.nombre)
         
         // Ignorar mensajes que yo mismo envié (solo procesar mensajes del contacto)
         if (data.remitente_id === usuarioActual.id) {
           console.log('⏭️ Ignorando mensaje propio (ya está en la UI optimista)')
+          return
+        }
+
+        // VALIDACIÓN IMPORTANTE: Solo agregar mensajes de ESTE contacto
+        if (data.remitente_id !== contactoRef.current?.id || data.destinatario_id !== usuarioActual.id) {
+          console.log('⏭️ Mensaje no es para este chat, ignorando', {
+            remitente: data.remitente_id,
+            esperado: contactoRef.current?.id,
+            destinatario: data.destinatario_id,
+            esperadoDestinatario: usuarioActual.id
+          })
           return
         }
         
@@ -114,6 +134,7 @@ export default function ChatWindow({ contacto, usuarioActual }) {
             console.log('⏭️ Mensaje duplicado, ignorando')
             return prev
           }
+          console.log('✅ Agregando mensaje al chat')
           return [...prev, nuevoMsg]
         })
       }
@@ -121,12 +142,10 @@ export default function ChatWindow({ contacto, usuarioActual }) {
       // Escuchar en canal directo: cuando yo envío un mensaje
       const channel1 = window.Echo.private(`chat.${usuarioActual.id}.${contacto.id}`)
       
-      // Bind to the underlying Pusher channel to see ALL events
-      channel1.subscription.bind_global((eventName, data) => {
-        console.log('🌍 Global event received on channel 1:', eventName, data)
-        if (eventName === 'mensaje-enviado' || eventName === '.mensaje-enviado') {
-          handleMessageReceived(data)
-        }
+      // Usar listener específico en vez de bind_global
+      channel1.listen('.mensaje-enviado', (data) => {
+        console.log('📨 Mensaje en canal 1:', data)
+        handleMessageReceived(data)
       })
       
       console.log(`✅ Subscribed to channel: private-chat.${usuarioActual.id}.${contacto.id}`)
@@ -134,12 +153,10 @@ export default function ChatWindow({ contacto, usuarioActual }) {
       // Escuchar en canal inverso: cuando el otro usuario envía un mensaje
       const channel2 = window.Echo.private(`chat.${contacto.id}.${usuarioActual.id}`)
       
-      // Bind to the underlying Pusher channel to see ALL events
-      channel2.subscription.bind_global((eventName, data) => {
-        console.log('🌍 Global event received on channel 2:', eventName, data)
-        if (eventName === 'mensaje-enviado' || eventName === '.mensaje-enviado') {
-          handleMessageReceived(data)
-        }
+      // Usar listener específico en vez de bind_global
+      channel2.listen('.mensaje-enviado', (data) => {
+        console.log('📨 Mensaje en canal 2:', data)
+        handleMessageReceived(data)
       })
       
       console.log(`✅ Subscribed to channel: private-chat.${contacto.id}.${usuarioActual.id}`)
