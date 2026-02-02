@@ -10,12 +10,19 @@ export default function ChatApp({ usuario, onLogout }) {
   const [selectedContact, setSelectedContact] = useState(null)
   const [isLoadingContactos, setIsLoadingContactos] = useState(true)
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false)
+  const [unreadMessages, setUnreadMessages] = useState([])
   const selectedContactRef = useRef(null)
+  const contactosRef = useRef([])
 
   // Mantener la referencia actualizada
   useEffect(() => {
     selectedContactRef.current = selectedContact
   }, [selectedContact])
+
+  // Mantener la referencia de contactos actualizada
+  useEffect(() => {
+    contactosRef.current = contactos
+  }, [contactos])
 
   // Si no hay usuario, no renderizar
   if (!usuario) {
@@ -77,6 +84,18 @@ export default function ChatApp({ usuario, onLogout }) {
           if (soyDestinatario && esDiferenteAlChatActual) {
             console.log('✅ Mostrando notificación - mensaje de otro contacto')
             setHasUnreadMessages(true)
+            
+            // Agregar mensaje a la lista de no leídos
+            const remitenteContacto = contactosRef.current.find(c => c.id === data.remitente_id)
+            console.log('📋 Agregando a notificaciones:', {
+              remitente: remitenteContacto?.nombre,
+              contenido: data.contenido
+            })
+            setUnreadMessages(prev => [...prev, {
+              ...data,
+              remitente: remitenteContacto,
+              fecha: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+            }])
           } else {
             console.log('⏭️ No mostrar notificación:', { soyDestinatario, esDiferenteAlChatActual })
           }
@@ -89,8 +108,19 @@ export default function ChatApp({ usuario, onLogout }) {
 
   const handleSelectContact = (contact) => {
     setSelectedContact(contact)
-    // Al seleccionar un contacto, quitar la notificación
-    setHasUnreadMessages(false)
+    // Al seleccionar un contacto, quitar la notificación y limpiar mensajes no leídos de ese contacto
+    setUnreadMessages(prev => prev.filter(msg => msg.remitente_id !== contact.id))
+    if (unreadMessages.length === 0 || unreadMessages.every(msg => msg.remitente_id === contact.id)) {
+      setHasUnreadMessages(false)
+    }
+  }
+
+  const handleNotificationClick = (message) => {
+    // Buscar el contacto del remitente y seleccionarlo
+    const contact = contactos.find(c => c.id === message.remitente_id)
+    if (contact) {
+      handleSelectContact(contact)
+    }
   }
 
   const loadContactos = async () => {
@@ -123,7 +153,13 @@ export default function ChatApp({ usuario, onLogout }) {
 
   return (
     <div className="chat-app">
-      <NavBar usuario={usuario} onLogout={onLogout} hasUnreadMessages={hasUnreadMessages} />
+      <NavBar 
+        usuario={usuario} 
+        onLogout={onLogout} 
+        hasUnreadMessages={hasUnreadMessages}
+        unreadMessages={unreadMessages}
+        onNotificationClick={handleNotificationClick}
+      />
       
       <div className="chat-container-main">
         <div className="contacts-panel">

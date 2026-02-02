@@ -3,8 +3,9 @@ import { useState } from 'react'
 import logoPequeno from '../assets/imgs/logo-pequeno.jpg'
 import './NavBar.css'
 
-export default function NavBar({ usuario, onLogout, hasUnreadMessages = false }) {
+export default function NavBar({ usuario, onLogout, hasUnreadMessages = false, unreadMessages = [], onNotificationClick }) {
   const [showDropdown, setShowDropdown] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
 
   const getInitials = (nombre, apellido) => {
     return `${nombre?.charAt(0)}${apellido?.charAt(0)}`.toUpperCase()
@@ -34,10 +35,54 @@ export default function NavBar({ usuario, onLogout, hasUnreadMessages = false })
       </div>
 
       <div className="navbar-right">
-        <button className="notification-btn" title="Notificaciones">
-          <FiBell size={20} />
-          {hasUnreadMessages && <span className="notification-badge"></span>}
-        </button>
+        <div className="notification-container">
+          <button 
+            className="notification-btn" 
+            title="Notificaciones"
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
+            <FiBell size={20} />
+            {hasUnreadMessages && <span className="notification-badge"></span>}
+          </button>
+          
+          {showNotifications && (
+            <div className="notifications-dropdown">
+              <div className="notifications-header">
+                <h3>Notificaciones</h3>
+                {unreadMessages.length > 0 && (
+                  <span className="unread-count">{unreadMessages.length}</span>
+                )}
+              </div>
+              <div className="notifications-list">
+                {unreadMessages.length === 0 ? (
+                  <div className="no-notifications">
+                    <p>No hay mensajes nuevos</p>
+                  </div>
+                ) : (
+                  unreadMessages.map((msg, index) => (
+                    <div 
+                      key={index} 
+                      className="notification-item"
+                      onClick={() => {
+                        setShowNotifications(false)
+                        onNotificationClick?.(msg)
+                      }}
+                    >
+                      <div className="notification-avatar">
+                        {msg.remitente?.nombre?.charAt(0)}{msg.remitente?.apellido?.charAt(0)}
+                      </div>
+                      <div className="notification-content">
+                        <div className="notification-sender">{msg.remitente?.nombre}</div>
+                        <div className="notification-message">{msg.contenido}</div>
+                        <div className="notification-time">{msg.fecha}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
         <div className="user-profile-container">
           <button 
             className="user-profile-btn"
