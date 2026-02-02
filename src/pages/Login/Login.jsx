@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
-import logoCompleto from '../assets/imgs/logo-completo.jpg'
+import logoCompleto from '../../assets/imgs/logo-completo.jpg'
 import './Login.css'
 
 export default function Login({ onLoginSuccess, onSwitchToRegister }) {
