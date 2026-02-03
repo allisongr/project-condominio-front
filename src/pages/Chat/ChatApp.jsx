@@ -12,6 +12,8 @@ export default function ChatApp({ usuario, onLogout }) {
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false)
   const [unreadMessages, setUnreadMessages] = useState([])
   const [dropdownOpened, setDropdownOpened] = useState(false)
+  const [contactsWithNewMessages, setContactsWithNewMessages] = useState(new Set())
+  const [lastMessageByContact, setLastMessageByContact] = useState({})
   const selectedContactRef = useRef(null)
   const contactosRef = useRef([])
 
@@ -76,6 +78,28 @@ export default function ChatApp({ usuario, onLogout }) {
               return [...prev, nuevoMensaje]
             })
             
+            setContactsWithNewMessages(prev => new Set([...prev, data.remitente_id]))
+            
+            setLastMessageByContact(prev => ({
+              ...prev,
+              [data.remitente_id]: {
+                contenido: data.contenido,
+                fecha: data.fecha,
+                remitente_id: data.remitente_id
+              }
+            }))
+            
+            setContactos(prevContactos => {
+              const contactoIndex = prevContactos.findIndex(c => c.id === data.remitente_id)
+              if (contactoIndex > 0) {
+                const newContactos = [...prevContactos]
+                const [contactoMovido] = newContactos.splice(contactoIndex, 1)
+                newContactos.unshift(contactoMovido)
+                return newContactos
+              }
+              return prevContactos
+            })
+            
             setHasUnreadMessages(true)
           }
         }
@@ -86,6 +110,11 @@ export default function ChatApp({ usuario, onLogout }) {
   const handleSelectContact = (contact) => {
     setSelectedContact(contact)
     setUnreadMessages(prev => prev.filter(msg => msg.remitente_id !== contact.id))
+    setContactsWithNewMessages(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(contact.id)
+      return newSet
+    })
     if (unreadMessages.length === 0 || unreadMessages.every(msg => msg.remitente_id === contact.id)) {
       setHasUnreadMessages(false)
     }
@@ -103,6 +132,36 @@ export default function ChatApp({ usuario, onLogout }) {
     setHasUnreadMessages(false)
   }
 
+  const loadLastMessages = async (contactosData) => {
+    const lastMessages = {}
+    
+    for (const contacto of contactosData) {
+      try {
+        const response = await axios.get('/api/chat/messages', {
+          params: {
+            id_depa: contacto.depa,
+            contacto_id: contacto.id,
+            usuario_id: usuario.id,
+            per_page: 1
+          }
+        })
+        
+        if (response.data && response.data.length > 0) {
+          const lastMsg = response.data[response.data.length - 1]
+          lastMessages[contacto.id] = {
+            contenido: lastMsg.contenido,
+            fecha: lastMsg.fecha,
+            remitente_id: lastMsg.remitente_id
+          }
+        }
+      } catch (error) {
+        console.error(`Error loading last message for contact ${contacto.id}:`, error)
+      }
+    }
+    
+    setLastMessageByContact(lastMessages)
+  }
+
   const loadContactos = async () => {
     try {
       setIsLoadingContactos(true)
@@ -118,6 +177,8 @@ export default function ChatApp({ usuario, onLogout }) {
       if (contactosData.length > 0) {
         setSelectedContact(contactosData[0])
       }
+      
+      await loadLastMessages(contactosData)
     } catch (error) {
       console.error('Error loading contactos:', error)
       setContactos([])
@@ -148,6 +209,9 @@ export default function ChatApp({ usuario, onLogout }) {
               contactos={contactos}
               selectedContact={selectedContact}
               onSelectContact={handleSelectContact}
+              contactsWithNewMessages={contactsWithNewMessages}
+              lastMessageByContact={lastMessageByContact}
+              currentUserId={usuario.id}
             />
           )}
         </div>
