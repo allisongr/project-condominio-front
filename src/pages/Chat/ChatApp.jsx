@@ -11,6 +11,7 @@ export default function ChatApp({ usuario, onLogout }) {
   const [isLoadingContactos, setIsLoadingContactos] = useState(true)
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false)
   const [unreadMessages, setUnreadMessages] = useState([])
+  const [dropdownOpened, setDropdownOpened] = useState(false)
   const selectedContactRef = useRef(null)
   const contactosRef = useRef([])
 
@@ -97,6 +98,11 @@ export default function ChatApp({ usuario, onLogout }) {
     }
   }
 
+  const handleNotificationDropdownOpen = () => {
+    setDropdownOpened(true)
+    setHasUnreadMessages(false)
+  }
+
   const loadContactos = async () => {
     try {
       setIsLoadingContactos(true)
@@ -128,12 +134,15 @@ export default function ChatApp({ usuario, onLogout }) {
         hasUnreadMessages={hasUnreadMessages}
         unreadMessages={unreadMessages}
         onNotificationClick={handleNotificationClick}
+        onNotificationDropdownOpen={handleNotificationDropdownOpen}
       />
       
       <div className="chat-container-main">
         <div className="contacts-panel">
           {isLoadingContactos ? (
-            <div className="loading">Cargando...</div>
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+            </div>
           ) : (
             <ContactList
               contactos={contactos}

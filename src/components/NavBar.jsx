@@ -3,7 +3,7 @@ import { useState } from 'react'
 import logoPequeno from '../assets/imgs/logo-pequeno.jpg'
 import './NavBar.css'
 
-export default function NavBar({ usuario, onLogout, hasUnreadMessages = false, unreadMessages = [], onNotificationClick }) {
+export default function NavBar({ usuario, onLogout, hasUnreadMessages = false, unreadMessages = [], onNotificationClick, onNotificationDropdownOpen }) {
   const [showDropdown, setShowDropdown] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
 
@@ -39,7 +39,13 @@ export default function NavBar({ usuario, onLogout, hasUnreadMessages = false, u
           <button 
             className="notification-btn" 
             title="Notificaciones"
-            onClick={() => setShowNotifications(!showNotifications)}
+            onClick={() => {
+              const newState = !showNotifications
+              setShowNotifications(newState)
+              if (newState && onNotificationDropdownOpen) {
+                onNotificationDropdownOpen()
+              }
+            }}
           >
             <FiBell size={20} />
             {hasUnreadMessages && <span className="notification-badge"></span>}
