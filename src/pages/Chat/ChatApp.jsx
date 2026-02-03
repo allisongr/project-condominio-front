@@ -27,6 +27,15 @@ export default function ChatApp({ usuario, onLogout }) {
     contactosRef.current = contactos
   }, [contactos])
 
+  useEffect(() => {
+    if (Object.keys(lastMessageByContact).length > 0 && contactos.length > 0) {
+      const sorted = sortContactsByLastMessage(contactos)
+      if (JSON.stringify(sorted.map(c => c.id)) !== JSON.stringify(contactos.map(c => c.id))) {
+        setContactos(sorted)
+      }
+    }
+  }, [lastMessageByContact])
+
   // Si no hay usuario, no renderizar
   if (!usuario) {
     return <div>Cargando...</div>
@@ -132,6 +141,28 @@ export default function ChatApp({ usuario, onLogout }) {
     setHasUnreadMessages(false)
   }
 
+  const handleMessageSent = (contactId, messageData) => {
+    setLastMessageByContact(prev => ({
+      ...prev,
+      [contactId]: {
+        contenido: messageData.contenido,
+        fecha: messageData.fecha,
+        remitente_id: usuario.id
+      }
+    }))
+    
+    setContactos(prevContactos => {
+      const contactoIndex = prevContactos.findIndex(c => c.id === contactId)
+      if (contactoIndex > 0) {
+        const newContactos = [...prevContactos]
+        const [contactoMovido] = newContactos.splice(contactoIndex, 1)
+        newContactos.unshift(contactoMovido)
+        return newContactos
+      }
+      return prevContactos
+    })
+  }
+
   const loadLastMessages = async (contactosData) => {
     const lastMessages = {}
     
@@ -160,6 +191,21 @@ export default function ChatApp({ usuario, onLogout }) {
     }
     
     setLastMessageByContact(lastMessages)
+  }
+
+  const sortContactsByLastMessage = (contactsList) => {
+    return [...contactsList].sort((a, b) => {
+      const lastMsgA = lastMessageByContact[a.id]
+      const lastMsgB = lastMessageByContact[b.id]
+      
+      if (!lastMsgA && !lastMsgB) return 0
+      if (!lastMsgA) return 1
+      if (!lastMsgB) return -1
+      
+      const dateA = new Date(lastMsgA.fecha)
+      const dateB = new Date(lastMsgB.fecha)
+      return dateB - dateA
+    })
   }
 
   const loadContactos = async () => {
@@ -221,6 +267,7 @@ export default function ChatApp({ usuario, onLogout }) {
             <ChatWindow
               contacto={selectedContact}
               usuarioActual={usuario}
+              onMessageSent={handleMessageSent}
             />
           ) : (
             <div className="no-contact-selected">

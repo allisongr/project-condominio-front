@@ -5,7 +5,7 @@ import './ChatWindow.css'
 import MessageBubble from './MessageBubble'
 import Avatar from './Avatar'
 
-export default function ChatWindow({ contacto, usuarioActual }) {
+export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
   const [mensajes, setMensajes] = useState([])
   const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const [nuevoMensaje, setNuevoMensaje] = useState('')
@@ -191,6 +191,13 @@ export default function ChatWindow({ contacto, usuarioActual }) {
             msg.id === tempId ? { ...msg, id: response.data.data.id } : msg
           )
         )
+        
+        if (onMessageSent) {
+          onMessageSent(contacto.id, {
+            contenido: mensajeTexto,
+            fecha: new Date().toISOString()
+          })
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error)
