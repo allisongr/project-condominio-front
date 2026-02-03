@@ -2,7 +2,7 @@ import { FiEdit2 } from 'react-icons/fi'
 import './ContactList.css'
 import ContactItem from './ContactItem'
 
-export default function ContactList({ contactos, selectedContact, onSelectContact }) {
+export default function ContactList({ contactos, selectedContact, onSelectContact, contactsWithNewMessages = new Set(), lastMessageByContact = {}, currentUserId }) {
   return (
     <div className="contact-list">
       <div className="contacts-header">
@@ -16,6 +16,9 @@ export default function ContactList({ contactos, selectedContact, onSelectContac
             contacto={contacto}
             isSelected={selectedContact?.id === contacto.id}
             onClick={() => onSelectContact(contacto)}
+            hasNewMessage={contactsWithNewMessages.has(contacto.id)}
+            lastMessage={lastMessageByContact[contacto.id]}
+            currentUserId={currentUserId}
           />
         ))}
       </div>

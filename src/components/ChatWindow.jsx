@@ -5,7 +5,7 @@ import './ChatWindow.css'
 import MessageBubble from './MessageBubble'
 import Avatar from './Avatar'
 
-export default function ChatWindow({ contacto, usuarioActual }) {
+export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
   const [mensajes, setMensajes] = useState([])
   const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const [nuevoMensaje, setNuevoMensaje] = useState('')
@@ -13,12 +13,21 @@ export default function ChatWindow({ contacto, usuarioActual }) {
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef(null)
   const typingTimeoutRef = useRef(null)
+  const contactoRef = useRef(contacto)
+
+  // Mantener la referencia del contacto actualizada
+  useEffect(() => {
+    contactoRef.current = contacto
+  }, [contacto])
 
   axios.defaults.baseURL = 'http://localhost:8000'
 
   // Cargar mensajes desde localStorage o API
   useEffect(() => {
     if (contacto?.id) {
+      // Limpiar mensajes anteriores
+      setMensajes([])
+      
       // Primero, intentar cargar desde localStorage
       const storageKey = `chat_${usuarioActual.id}_${contacto.id}`
       const storedMensajes = localStorage.getItem(storageKey)
@@ -38,10 +47,6 @@ export default function ChatWindow({ contacto, usuarioActual }) {
     }
 
     return () => {
-      // Limpiar listeners de WebSocket al desmontar
-      if (window.Echo) {
-        window.Echo.leave(`chat.${usuarioActual.id}`)
-      }
     }
   }, [contacto?.id])
 
@@ -49,7 +54,6 @@ export default function ChatWindow({ contacto, usuarioActual }) {
     scrollToBottom()
   }, [mensajes])
 
-  // Guardar mensajes en localStorage
   useEffect(() => {
     if (mensajes.length > 0 && contacto?.id && usuarioActual?.id) {
       const storageKey = `chat_${usuarioActual.id}_${contacto.id}`
@@ -57,7 +61,6 @@ export default function ChatWindow({ contacto, usuarioActual }) {
     }
   }, [mensajes, contacto?.id, usuarioActual?.id])
 
-  // Cargar mensajes desde la API
   const loadMessages = async () => {
     try {
       setIsLoadingMessages(true)
@@ -70,31 +73,26 @@ export default function ChatWindow({ contacto, usuarioActual }) {
         },
         timeout: 5000,
       })
-      console.log('Mensajes cargados desde API:', response.data)
-      console.log('Primer mensaje:', response.data[0])
       if (response.data && Array.isArray(response.data)) {
         setMensajes(response.data)
       }
     } catch (error) {
       console.error('Error loading messages from API:', error)
-      // No hacer nada, mantener los mensajes del localStorage
     } finally {
       setIsLoadingMessages(false)
     }
   }
 
-  // Configurar WebSockets
   const setupWebSockets = () => {
     if (!window.Echo) return
 
     try {
-      // Función para procesar mensajes recibidos
       const handleMessageReceived = (data) => {
-        console.log('✅ Mensaje recibido vía WebSocket:', data)
-        
-        // Ignorar mensajes que yo mismo envié (solo procesar mensajes del contacto)
         if (data.remitente_id === usuarioActual.id) {
-          console.log('⏭️ Ignorando mensaje propio (ya está en la UI optimista)')
+          return
+        }
+
+        if (data.remitente_id !== contactoRef.current?.id || data.destinatario_id !== usuarioActual.id) {
           return
         }
         
@@ -107,46 +105,26 @@ export default function ChatWindow({ contacto, usuarioActual }) {
           leido: data.leido || false,
         }
         
-        // Verificar si el mensaje ya existe (evitar duplicados)
         setMensajes((prev) => {
           const existe = prev.some(msg => msg.id === data.id)
           if (existe) {
-            console.log('⏭️ Mensaje duplicado, ignorando')
             return prev
           }
           return [...prev, nuevoMsg]
         })
       }
 
-      // Escuchar en canal directo: cuando yo envío un mensaje
       const channel1 = window.Echo.private(`chat.${usuarioActual.id}.${contacto.id}`)
-      
-      // Bind to the underlying Pusher channel to see ALL events
-      channel1.subscription.bind_global((eventName, data) => {
-        console.log('🌍 Global event received on channel 1:', eventName, data)
-        if (eventName === 'mensaje-enviado' || eventName === '.mensaje-enviado') {
-          handleMessageReceived(data)
-        }
+      channel1.listen('.mensaje-enviado', (data) => {
+        handleMessageReceived(data)
       })
-      
-      console.log(`✅ Subscribed to channel: private-chat.${usuarioActual.id}.${contacto.id}`)
 
-      // Escuchar en canal inverso: cuando el otro usuario envía un mensaje
       const channel2 = window.Echo.private(`chat.${contacto.id}.${usuarioActual.id}`)
-      
-      // Bind to the underlying Pusher channel to see ALL events
-      channel2.subscription.bind_global((eventName, data) => {
-        console.log('🌍 Global event received on channel 2:', eventName, data)
-        if (eventName === 'mensaje-enviado' || eventName === '.mensaje-enviado') {
-          handleMessageReceived(data)
-        }
+      channel2.listen('.mensaje-enviado', (data) => {
+        handleMessageReceived(data)
       })
-      
-      console.log(`✅ Subscribed to channel: private-chat.${contacto.id}.${usuarioActual.id}`)
-
-      console.log(`✅ WebSocket listeners set up for channels: chat.${usuarioActual.id}.${contacto.id} and chat.${contacto.id}.${usuarioActual.id}`)
     } catch (error) {
-      console.error('❌ Error setting up WebSockets:', error)
+      console.error('Error setting up WebSockets:', error)
     }
   }
 
@@ -167,27 +145,11 @@ export default function ChatWindow({ contacto, usuarioActual }) {
   const handleMessageChange = (e) => {
     setNuevoMensaje(e.target.value)
 
-    // Limpiar timeout anterior
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current)
     }
 
-    // TODO: Enviar indicador de escritura (disabled for now)
-    // try {
-    //   if (window.Echo && e.target.value.length > 0) {
-    //     axios.post('/api/chat/typing', {
-    //       usuario_id: usuarioActual.id,
-    //       destinatario_id: contacto.id,
-    //       id_depa: contacto.depa,
-    //     })
-    //   }
-    // } catch (error) {
-    //   console.error('Error sending typing indicator:', error)
-    // }
-
-    // Detener indicador después de 1 segundo de inactividad
     typingTimeoutRef.current = setTimeout(() => {
-      // Indicador de "dejó de escribir"
     }, 1000)
   }
 
@@ -229,6 +191,13 @@ export default function ChatWindow({ contacto, usuarioActual }) {
             msg.id === tempId ? { ...msg, id: response.data.data.id } : msg
           )
         )
+        
+        if (onMessageSent) {
+          onMessageSent(contacto.id, {
+            contenido: mensajeTexto,
+            fecha: new Date().toISOString()
+          })
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error)

@@ -30,6 +30,12 @@
   gap: 8px;
 }
 
+.contact-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .contact-name {
   margin: 0;
   font-size: 0.95rem;
@@ -56,4 +62,24 @@
   background-color: #43e97b;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.new-message-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #10b981;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  animation: pulse-green 2s ease-in-out infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  }
 }

@@ -1,7 +1,14 @@
 import Avatar from './Avatar'
 import './ContactItem.css'
 
-export default function ContactItem({ contacto, isSelected, onClick }) {
+export default function ContactItem({ contacto, isSelected, onClick, hasNewMessage = false, lastMessage, currentUserId }) {
+  const getPreviewText = () => {
+    if (!lastMessage) return 'Sin mensajes'
+    
+    const prefix = lastMessage.remitente_id === currentUserId ? 'Tú: ' : ''
+    return prefix + lastMessage.contenido
+  }
+  
   return (
     <div
       className={`contact-item ${isSelected ? 'active' : ''}`}
@@ -12,9 +19,12 @@ export default function ContactItem({ contacto, isSelected, onClick }) {
       <div className="contact-info">
         <div className="contact-header">
           <h3 className="contact-name">{contacto.nombre} {contacto.apellido}</h3>
-          {contacto.online && <span className="online-indicator"></span>}
+          <div className="contact-status">
+            {hasNewMessage && <span className="new-message-indicator"></span>}
+            {contacto.online && <span className="online-indicator"></span>}
+          </div>
         </div>
-        <p className="contact-preview">{contacto.mensaje}</p>
+        <p className="contact-preview">{getPreviewText()}</p>
       </div>
     </div>
   )
