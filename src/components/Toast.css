@@ -1,0 +1,53 @@
+/* Personalización del ToastContainer */
+.custom-toast-container {
+  z-index: 99999;
+}
+
+/* Estilos personalizados para los toasts */
+.Toastify__toast {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 16px;
+}
+
+.Toastify__toast--success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.Toastify__toast--error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.Toastify__toast--info {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.Toastify__toast--warning {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.Toastify__progress-bar--success {
+  background: #2d7a6a;
+}
+
+.Toastify__progress-bar--error {
+  background: #dc2626;
+}
+
+.Toastify__progress-bar--info {
+  background: #3b82f6;
+}
+
+.Toastify__progress-bar--warning {
+  background: #f59e0b;
+}

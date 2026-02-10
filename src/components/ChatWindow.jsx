@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { FiMoreVertical, FiSend } from 'react-icons/fi'
 import axios from 'axios'
+import { toast } from 'react-toastify'
+import { TransitionGroup, CSSTransition } from 'react-transition-group'
 import './ChatWindow.css'
+import './ChatWindowTransitions.css'
 import MessageBubble from './MessageBubble'
 import Avatar from './Avatar'
 
@@ -14,6 +17,10 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
   const messagesEndRef = useRef(null)
   const typingTimeoutRef = useRef(null)
   const contactoRef = useRef(contacto)
+  const loadingRef = useRef(null)
+  const noMessagesRef = useRef(null)
+  const typingRef = useRef(null)
+  const messageRefs = useRef({})
 
   // Mantener la referencia del contacto actualizada
   useEffect(() => {
@@ -59,6 +66,14 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
       const storageKey = `chat_${usuarioActual.id}_${contacto.id}`
       localStorage.setItem(storageKey, JSON.stringify(mensajes))
     }
+    
+    // Limpiar referencias de mensajes que ya no existen
+    const currentMessageIds = new Set(mensajes.map(m => m.id))
+    Object.keys(messageRefs.current).forEach(id => {
+      if (!currentMessageIds.has(id)) {
+        delete messageRefs.current[id]
+      }
+    })
   }, [mensajes, contacto?.id, usuarioActual?.id])
 
   const loadMessages = async () => {
@@ -78,6 +93,9 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
       }
     } catch (error) {
       console.error('Error loading messages from API:', error)
+      if (error.code === 'ECONNABORTED') {
+        toast.error('Tiempo de espera agotado al cargar mensajes')
+      }
     } finally {
       setIsLoadingMessages(false)
     }
@@ -201,6 +219,7 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
       }
     } catch (error) {
       console.error('Error sending message:', error)
+      toast.error('Error al enviar el mensaje')
       // Remover mensaje local en caso de error
       setMensajes((prev) => prev.filter(msg => !msg.id.toString().startsWith('temp-')))
       setNuevoMensaje(mensajeTexto) // Restaurar el texto
@@ -243,28 +262,71 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
       {/* Messages */}
       <div className="chat-messages">
         {isLoadingMessages ? (
-          <div className="loading-messages">Cargando mensajes...</div>
+          <CSSTransition
+            in={isLoadingMessages}
+            timeout={300}
+            classNames="fade"
+            unmountOnExit
+            nodeRef={loadingRef}
+          >
+            <div ref={loadingRef} className="loading-messages">
+              Cargando mensajes...
+            </div>
+          </CSSTransition>
         ) : (
           <>
             {mensajes.length === 0 ? (
-              <div className="no-messages">
-                <p>No hay mensajes aún. ¡Inicia la conversación!</p>
-              </div>
+              <CSSTransition
+                in={mensajes.length === 0}
+                timeout={300}
+                classNames="slide-up"
+                appear
+                nodeRef={noMessagesRef}
+              >
+                <div ref={noMessagesRef} className="no-messages">
+                  <p>No hay mensajes aún. ¡Inicia la conversación!</p>
+                </div>
+              </CSSTransition>
             ) : (
-              mensajes.map((mensaje) => (
-                <MessageBubble
-                  key={mensaje.id}
-                  mensaje={mensaje}
-                  isOwn={mensaje.remitente_id === usuarioActual.id}
-                />
-              ))
+              <TransitionGroup>
+                {mensajes.map((mensaje) => {
+                  if (!messageRefs.current[mensaje.id]) {
+                    messageRefs.current[mensaje.id] = { current: null }
+                  }
+                  const nodeRef = messageRefs.current[mensaje.id]
+                  
+                  return (
+                    <CSSTransition
+                      key={mensaje.id}
+                      timeout={300}
+                      classNames="message"
+                      nodeRef={nodeRef}
+                    >
+                      <div ref={nodeRef}>
+                        <MessageBubble
+                          mensaje={mensaje}
+                          isOwn={mensaje.remitente_id === usuarioActual.id}
+                        />
+                      </div>
+                    </CSSTransition>
+                  )
+                })}
+              </TransitionGroup>
             )}
             {isTyping && (
-              <div className="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
+              <CSSTransition
+                in={isTyping}
+                timeout={200}
+                classNames="fade"
+                unmountOnExit
+                nodeRef={typingRef}
+              >
+                <div ref={typingRef} className="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </CSSTransition>
             )}
           </>
         )}
@@ -288,10 +350,16 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
           <button
             onClick={sendMessage}
             disabled={!nuevoMensaje.trim() || isLoading}
-            className="send-btn"
+            className={`send-btn ${isLoading ? 'loading' : ''}`}
             title="Enviar"
           >
-            <FiSend size={18} />
+            {isLoading ? (
+              <div className="send-btn-spinner">
+                <FiSend size={18} />
+              </div>
+            ) : (
+              <FiSend size={18} />
+            )}
           </button>
         </div>
       </div>

@@ -1,0 +1,33 @@
+/* Transiciones para CSSTransition en Login */
+.login-box-appear {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.login-box-appear-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+.login-box-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.login-box-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+.login-box-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.login-box-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 500ms ease-in, transform 500ms ease-in;
+}

@@ -1,18 +1,25 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import axios from 'axios'
+import { toast } from 'react-toastify'
+import { CSSTransition } from 'react-transition-group'
+import LoadingButton from '../../components/LoadingButton'
 import logoCompleto from '../../assets/imgs/logo-completo.jpg'
 import './Login.css'
+import './LoginTransitions.css'
 
 export default function Login({ onLoginSuccess, onSwitchToRegister }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const nodeRef = useRef(null)
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    const loadingToastId = toast.loading('Iniciando sesión...')
 
     try {
       const response = await axios.post('http://localhost:8000/api/auth/login', {
@@ -24,9 +31,18 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
       localStorage.setItem('usuario', JSON.stringify(response.data.usuario))
       localStorage.setItem('token', response.data.token)
 
-      onLoginSuccess(response.data.usuario)
+      toast.dismiss(loadingToastId)
+      toast.success('¡Bienvenido! Iniciando sesión...')
+      
+      // Pequeño delay para que se vea la animación de éxito
+      setTimeout(() => {
+        onLoginSuccess(response.data.usuario)
+      }, 500)
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al iniciar sesión')
+      const errorMessage = err.response?.data?.message || 'Error al iniciar sesión'
+      setError(errorMessage)
+      toast.dismiss(loadingToastId)
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -34,7 +50,14 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
 
   return (
     <div className="login-container">
-      <div className="login-box">
+      <CSSTransition
+        in={true}
+        appear={true}
+        timeout={500}
+        classNames="login-box"
+        nodeRef={nodeRef}
+      >
+        <div ref={nodeRef} className="login-box">
         <div className="login-header">
           <img src={logoCompleto} alt="Logo" className="login-logo" />
           <p>Inicia sesión para continuar</p>
@@ -67,13 +90,13 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
             />
           </div>
 
-          <button
+          <LoadingButton
             type="submit"
-            disabled={loading}
+            loading={loading}
             className="login-btn"
           >
             {loading ? 'Entrando...' : 'Entrar'}
-          </button>
+          </LoadingButton>
         </form>
 
         <div className="login-footer">
@@ -87,7 +110,8 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
             </button>
           </p>
         </div>
-      </div>
+        </div>
+      </CSSTransition>
     </div>
   )
 }

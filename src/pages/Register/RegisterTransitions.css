@@ -1,0 +1,33 @@
+/* Transiciones para CSSTransition en Register */
+.register-box-appear {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.register-box-appear-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+.register-box-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.register-box-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+.register-box-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.register-box-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 500ms ease-in, transform 500ms ease-in;
+}

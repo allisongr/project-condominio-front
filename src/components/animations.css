@@ -1,0 +1,72 @@
+/* Animaciones adicionales para mensajes */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.chat-messages {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.message-bubble {
+  animation: slideInUp 0.3s ease-out;
+}
+
+.typing-indicator {
+  animation: fadeIn 0.2s ease-in;
+}
+
+.typing-indicator span {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Loading spinner mejorado */
+.loading-messages,
+.no-messages {
+  animation: fadeIn 0.4s ease-in;
+}
+
+/* Transiciones suaves para los botones */
+button:not(:disabled) {
+  transition: all 0.2s ease;
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active {
+  transform: translateY(0);
+}
