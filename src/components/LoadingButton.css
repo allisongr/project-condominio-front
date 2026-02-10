@@ -1,0 +1,72 @@
+.loading-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.loading-button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.loading-button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+.loading-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.loading-button.loading {
+  pointer-events: none;
+}
+
+.loading-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.loading-button .spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin 1s linear infinite;
+}
+
+.loading-button .spinner svg {
+  display: block;
+}
+
+.loading-text {
+  opacity: 0.8;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Transiciones para CSSTransition */
+.spinner-fade-enter {
+  opacity: 0;
+}
+
+.spinner-fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.spinner-fade-exit {
+  opacity: 1;
+}
+
+.spinner-fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ChatApp from './pages/Chat'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Toast from './components/Toast'
 import './App.css'
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
 
   return (
     <div className="app">
+      <Toast />
       <ChatApp usuario={usuario} onLogout={handleLogout} />
     </div>
   )

@@ -4,6 +4,7 @@ import './ChatApp.css'
 import ChatWindow from '../../components/ChatWindow'
 import ContactList from '../../components/ContactList'
 import NavBar from '../../components/NavBar'
+import LoadingOverlay from '../../components/LoadingOverlay'
 
 export default function ChatApp({ usuario, onLogout }) {
   const [contactos, setContactos] = useState([])
@@ -235,6 +236,11 @@ export default function ChatApp({ usuario, onLogout }) {
 
   return (
     <div className="chat-app">
+      <LoadingOverlay 
+        isLoading={isLoadingContactos} 
+        message="Cargando contactos..." 
+      />
+      
       <NavBar 
         usuario={usuario} 
         onLogout={onLogout} 

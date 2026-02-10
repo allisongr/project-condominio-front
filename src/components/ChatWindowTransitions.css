@@ -1,0 +1,83 @@
+/* Transiciones para ChatWindow usando CSSTransition */
+
+/* Fade transitions */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+
+/* Slide up transitions */
+.slide-up-appear {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.slide-up-appear-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+/* Message transitions con TransitionGroup */
+.message-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.message-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.message-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.message-exit-active {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 300ms ease-in, transform 300ms ease-in;
+}
+
+/* Loading spinner para el botón de enviar */
+.send-btn-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hover effect mejorado para el botón de enviar */
+.send-btn:not(:disabled):hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+.send-btn:not(:disabled):active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}

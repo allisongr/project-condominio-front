@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import axios from 'axios'
+import { toast } from 'react-toastify'
+import { CSSTransition } from 'react-transition-group'
+import LoadingButton from '../../components/LoadingButton'
 import logoCompleto from '../../assets/imgs/logo-completo.jpg'
 import './Register.css'
+import './RegisterTransitions.css'
 
 export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
   const [nombre, setNombre] = useState('')
@@ -13,17 +17,21 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const nodeRef = useRef(null)
 
   const handleRegister = async (e) => {
     e.preventDefault()
     setError('')
 
     if (password !== passwordConfirm) {
-      setError('Las contraseñas no coinciden')
+      const errorMessage = 'Las contraseñas no coinciden'
+      setError(errorMessage)
+      toast.error(errorMessage)
       return
     }
 
     setLoading(true)
+    const loadingToastId = toast.loading('Registrando usuario...')
 
     try {
       const response = await axios.post('http://localhost:8000/api/auth/register', {
@@ -39,9 +47,18 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
       localStorage.setItem('usuario', JSON.stringify(response.data.usuario))
       localStorage.setItem('token', response.data.token)
 
-      onRegisterSuccess(response.data.usuario)
+      toast.dismiss(loadingToastId)
+      toast.success('¡Registro exitoso! Bienvenido...')
+      
+      // Pequeño delay para que se vea la animación de éxito
+      setTimeout(() => {
+        onRegisterSuccess(response.data.usuario)
+      }, 500)
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al registrarse')
+      const errorMessage = err.response?.data?.message || 'Error al registrarse'
+      setError(errorMessage)
+      toast.dismiss(loadingToastId)
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -49,7 +66,14 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
 
   return (
     <div className="register-container">
-      <div className="register-box">
+      <CSSTransition
+        in={true}
+        appear={true}
+        timeout={500}
+        classNames="register-box"
+        nodeRef={nodeRef}
+      >
+        <div ref={nodeRef} className="register-box">
         <div className="register-header">
           <img src={logoCompleto} alt="Logo" className="register-logo" />
           <p>Completa el formulario para registrarte</p>
@@ -140,13 +164,13 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
             />
           </div>
 
-          <button
+          <LoadingButton
             type="submit"
-            disabled={loading}
+            loading={loading}
             className="register-btn"
           >
             {loading ? 'Registrando...' : 'Registrarse'}
-          </button>
+          </LoadingButton>
         </form>
 
         <div className="register-footer">
@@ -160,7 +184,8 @@ export default function Register({ onRegisterSuccess, onSwitchToLogin }) {
             </button>
           </p>
         </div>
-      </div>
+        </div>
+      </CSSTransition>
     </div>
   )
 }
