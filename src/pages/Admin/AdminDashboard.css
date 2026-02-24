@@ -46,6 +46,9 @@
   font-size: 14px;
   font-weight: 600;
   transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .admin-logout-btn:hover {
@@ -83,6 +86,9 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(45, 122, 106, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn-create-user:hover {

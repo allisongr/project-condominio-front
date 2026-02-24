@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { FiCheckCircle, FiXCircle, FiLoader } from 'react-icons/fi'
 import './VerifyEmail.css'
 import logoCompleto from '../../assets/imgs/logo-completo.jpg'
 
@@ -50,16 +51,16 @@ export default function VerifyEmail() {
         <div className={`verify-email-content ${status}`}>
           {status === 'verifying' && (
             <div className="verify-spinner">
-              <div className="spinner"></div>
+              <FiLoader className="spinner-icon" />
             </div>
           )}
 
           {status === 'success' && (
-            <div className="verify-icon success">✓</div>
+            <div className="verify-icon success"><FiCheckCircle /></div>
           )}
 
           {status === 'error' && (
-            <div className="verify-icon error">✗</div>
+            <div className="verify-icon error"><FiXCircle /></div>
           )}
 
           <h1>{status === 'verifying' ? 'Verificando...' : status === 'success' ? '¡Éxito!' : 'Error'}</h1>

@@ -1,3 +1,4 @@
+import { FiMail, FiEdit, FiTrash2 } from 'react-icons/fi'
 import './UserList.css'
 
 export default function UserList({ users, loading, onEdit, onDelete, onResendVerification }) {
@@ -63,7 +64,7 @@ export default function UserList({ users, loading, onEdit, onDelete, onResendVer
                       user.email_verified ? 'verified' : 'unverified'
                     }`}
                   >
-                    {user.email_verified ? '✓ Verificado' : '✗ Sin Verificar'}
+                    {user.email_verified ? 'Verificado' : 'Sin Verificar'}
                   </span>
                   {!user.email_verified && (
                     <button
@@ -71,7 +72,7 @@ export default function UserList({ users, loading, onEdit, onDelete, onResendVer
                       className="btn-resend"
                       title="Reenviar correo de verificación"
                     >
-                      📧
+                      <FiMail />
                     </button>
                   )}
                 </div>
@@ -86,10 +87,10 @@ export default function UserList({ users, loading, onEdit, onDelete, onResendVer
               <td>
                 <div className="user-actions">
                   <button onClick={() => onEdit(user)} className="btn-edit" title="Editar">
-                    ✏️
+                    <FiEdit />
                   </button>
                   <button onClick={() => onDelete(user.id)} className="btn-delete" title="Eliminar">
-                    🗑️
+                    <FiTrash2 />
                   </button>
                 </div>
               </td>

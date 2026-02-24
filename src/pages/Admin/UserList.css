@@ -56,6 +56,7 @@
   padding: 16px 12px;
   border-bottom: 1px solid #f0f0f0;
   vertical-align: middle;
+  color: #333;
 }
 
 .user-table tbody tr {
@@ -141,12 +142,17 @@
   cursor: pointer;
   font-size: 16px;
   transition: all 0.2s ease;
+  color: #2d7a6a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-resend:hover {
   background: #f8f9fa;
   border-color: #2d7a6a;
   transform: scale(1.1);
+  color: #1e5b4e;
 }
 
 .user-actions {
@@ -163,18 +169,31 @@
   cursor: pointer;
   font-size: 16px;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit {
+  color: #ffc107;
 }
 
 .btn-edit:hover {
   background: #fff3cd;
   border-color: #ffc107;
   transform: scale(1.1);
+  color: #cc9a06;
+}
+
+.btn-delete {
+  color: #ff6b6b;
 }
 
 .btn-delete:hover {
   background: #ffe0e0;
   border-color: #ff6b6b;
   transform: scale(1.1);
+  color: #ee5a52;
 }
 
 @media (max-width: 1200px) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import { FiUserPlus, FiLogOut } from 'react-icons/fi'
 import UserList from './UserList'
 import UserForm from './UserForm'
 import './AdminDashboard.css'
@@ -138,7 +139,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
               {usuario.nombre} {usuario.apellido}
             </span>
             <button onClick={onLogout} className="admin-logout-btn">
-              Cerrar Sesión
+              <FiLogOut /> Cerrar Sesión
             </button>
           </div>
         </div>
@@ -149,7 +150,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
           <>
             <div className="admin-actions">
               <button onClick={() => setShowForm(true)} className="btn-create-user">
-                + Crear Nuevo Usuario
+                <FiUserPlus /> Crear Nuevo Usuario
               </button>
 
               <div className="admin-filters">
