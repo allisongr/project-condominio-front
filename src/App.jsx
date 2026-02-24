@@ -1,58 +1,95 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import ChatApp from './pages/Chat'
 import Login from './pages/Login'
-import Register from './pages/Register'
+import { AdminDashboard } from './pages/Admin'
+import { VerifyEmail } from './pages/VerifyEmail'
 import Toast from './components/Toast'
 import './App.css'
 
-function App() {
+function AppContent() {
   const [usuario, setUsuario] = useState(null)
-  const [view, setView] = useState('login') // 'login', 'register', or 'chat'
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Verificar si hay usuario guardado en localStorage
     const usuarioGuardado = localStorage.getItem('usuario')
     if (usuarioGuardado) {
       setUsuario(JSON.parse(usuarioGuardado))
-      setView('chat')
     }
   }, [])
 
   const handleLoginSuccess = (usuarioData) => {
     setUsuario(usuarioData)
-    setView('chat')
+    // Redirigir según el rol
+    if (usuarioData.admin) {
+      navigate('/admin')
+    } else {
+      navigate('/chat')
+    }
   }
 
   const handleLogout = () => {
     localStorage.removeItem('usuario')
     localStorage.removeItem('token')
     setUsuario(null)
-    setView('login')
-  }
-
-  if (!usuario) {
-    return (
-      <div className="app">
-        {view === 'login' ? (
-          <Login
-            onLoginSuccess={handleLoginSuccess}
-            onSwitchToRegister={() => setView('register')}
-          />
-        ) : (
-          <Register
-            onRegisterSuccess={handleLoginSuccess}
-            onSwitchToLogin={() => setView('login')}
-          />
-        )}
-      </div>
-    )
+    navigate('/login')
   }
 
   return (
     <div className="app">
       <Toast />
-      <ChatApp usuario={usuario} onLogout={handleLogout} />
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            usuario ? (
+              <Navigate to={usuario.admin ? '/admin' : '/chat'} replace />
+            ) : (
+              <Login onLoginSuccess={handleLoginSuccess} />
+            )
+          }
+        />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route
+          path="/chat"
+          element={
+            usuario && !usuario.admin ? (
+              <ChatApp usuario={usuario} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            usuario && usuario.admin ? (
+              <AdminDashboard usuario={usuario} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <Navigate
+              to={usuario ? (usuario.admin ? '/admin' : '/chat') : '/login'}
+              replace
+            />
+          }
+        />
+      </Routes>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   )
 }
 

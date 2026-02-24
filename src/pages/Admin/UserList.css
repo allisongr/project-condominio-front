@@ -1,0 +1,218 @@
+.user-list {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.user-list-loading,
+.user-list-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #666;
+}
+
+.user-list-loading .spinner {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 20px;
+  border: 4px solid #f0f0f0;
+  border-top: 4px solid #2d7a6a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.user-table thead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.user-table th {
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+  color: #333;
+}
+
+.user-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.user-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.user-table tbody tr.user-inactive {
+  opacity: 0.6;
+}
+
+.user-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge-admin {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+  color: white;
+}
+
+.badge-role.admin {
+  background: #ff6b6b;
+  color: white;
+}
+
+.badge-role.user {
+  background: #4a9b7f;
+  color: white;
+}
+
+.badge-status.active {
+  background: #51cf66;
+  color: white;
+}
+
+.badge-status.inactive {
+  background: #868e96;
+  color: white;
+}
+
+.badge-verification.verified {
+  background: #51cf66;
+  color: white;
+}
+
+.badge-verification.unverified {
+  background: #ffa94d;
+  color: white;
+}
+
+.verification-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-resend {
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  color: #2d7a6a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-resend:hover {
+  background: #f8f9fa;
+  border-color: #2d7a6a;
+  transform: scale(1.1);
+  color: #1e5b4e;
+}
+
+.user-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit {
+  color: #ffc107;
+}
+
+.btn-edit:hover {
+  background: #fff3cd;
+  border-color: #ffc107;
+  transform: scale(1.1);
+  color: #cc9a06;
+}
+
+.btn-delete {
+  color: #ff6b6b;
+}
+
+.btn-delete:hover {
+  background: #ffe0e0;
+  border-color: #ff6b6b;
+  transform: scale(1.1);
+  color: #ee5a52;
+}
+
+@media (max-width: 1200px) {
+  .user-table {
+    font-size: 13px;
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 12px 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-list {
+    overflow-x: auto;
+  }
+
+  .user-table {
+    min-width: 800px;
+  }
+}

@@ -7,7 +7,7 @@ import logoCompleto from '../../assets/imgs/logo-completo.jpg'
 import './Login.css'
 import './LoginTransitions.css'
 
-export default function Login({ onLoginSuccess, onSwitchToRegister }) {
+export default function Login({ onLoginSuccess }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -40,7 +40,14 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
       }, 500)
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Error al iniciar sesión'
-      setError(errorMessage)
+      
+      // Si el email no está verificado, mostrar mensaje especial
+      if (err.response?.data?.email_not_verified) {
+        setError('Por favor verifica tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.')
+      } else {
+        setError(errorMessage)
+      }
+      
       toast.dismiss(loadingToastId)
       toast.error(errorMessage)
     } finally {
@@ -98,18 +105,6 @@ export default function Login({ onLoginSuccess, onSwitchToRegister }) {
             {loading ? 'Entrando...' : 'Entrar'}
           </LoadingButton>
         </form>
-
-        <div className="login-footer">
-          <p>
-            ¿No tienes cuenta?{' '}
-            <button
-              onClick={onSwitchToRegister}
-              className="register-link"
-            >
-              Regístrate aquí
-            </button>
-          </p>
-        </div>
         </div>
       </CSSTransition>
     </div>
