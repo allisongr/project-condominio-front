@@ -1,0 +1,164 @@
+.device-management {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.device-management-header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 20px;
+}
+
+.device-management-header h2 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.device-management-header .subtitle {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.device-management.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #999;
+}
+
+.no-devices {
+  padding: 40px 20px;
+  text-align: center;
+  color: #999;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.devices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.device-item {
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.device-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #d0d0d0;
+}
+
+.device-item.current {
+  background: #e3f2fd;
+  border-color: #2196F3;
+}
+
+.device-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge-current {
+  display: inline-block;
+  background: #2196F3;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.device-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.device-dates p {
+  margin: 0;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.date-login {
+  color: #555;
+}
+
+.date-used {
+  color: #999;
+  font-size: 0.8rem;
+}
+
+.device-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-logout-all {
+  padding: 10px 20px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-logout-all:hover {
+  background: #d32f2f;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.btn-logout-all:active {
+  transform: scale(0.98);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .device-management {
+    padding: 15px;
+  }
+
+  .device-management-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .device-management-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .device-item {
+    padding: 12px;
+  }
+
+  .device-name {
+    font-size: 0.95rem;
+  }
+
+  .device-actions {
+    justify-content: center;
+  }
+
+  .btn-logout-all {
+    width: 100%;
+  }
+}

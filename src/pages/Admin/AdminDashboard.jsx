@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { FiUserPlus, FiLogOut } from 'react-icons/fi'
+import API_BASE_URL from '../../config/api'
 import UserList from './UserList'
 import UserForm from './UserForm'
 import './AdminDashboard.css'
@@ -21,7 +22,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
     try {
       setLoading(true)
       const token = localStorage.getItem('token')
-      const response = await axios.get('http://localhost:8000/api/admin/usuarios', {
+      const response = await axios.get(`${API_BASE_URL}/api/admin/usuarios`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -38,7 +39,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
   const handleCreateUser = async (userData) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.post('http://localhost:8000/api/admin/usuarios', userData, {
+      await axios.post(`${API_BASE_URL}/api/admin/usuarios`, userData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,7 +57,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
   const handleUpdateUser = async (id, userData) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.put(`http://localhost:8000/api/admin/usuarios/${id}`, userData, {
+      await axios.put(`${API_BASE_URL}/api/admin/usuarios/${id}`, userData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -79,7 +80,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://localhost:8000/api/admin/usuarios/${id}`, {
+      await axios.delete(`${API_BASE_URL}/api/admin/usuarios/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -96,7 +97,7 @@ export default function AdminDashboard({ usuario, onLogout }) {
     try {
       const token = localStorage.getItem('token')
       await axios.post(
-        `http://localhost:8000/api/admin/usuarios/${id}/resend-verification`,
+        `${API_BASE_URL}/api/admin/usuarios/${id}/resend-verification`,
         {},
         {
           headers: {

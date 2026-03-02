@@ -27,8 +27,9 @@ export const getAvatarColor = (id) => {
 
 // Función para obtener contactos desde la API
 export const fetchContactos = async () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
   try {
-    const response = await fetch('http://localhost:8000/api/chat/101/messages?per_page=1')
+    const response = await fetch(`${API_BASE_URL}/api/chat/101/messages?per_page=1`)
     if (!response.ok) throw new Error('Error fetching')
     return response.data
   } catch (error) {

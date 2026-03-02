@@ -3,6 +3,7 @@ import { FiMoreVertical, FiSend } from 'react-icons/fi'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
+import API_BASE_URL from '../config/api'
 import './ChatWindow.css'
 import './ChatWindowTransitions.css'
 import MessageBubble from './MessageBubble'
@@ -27,7 +28,7 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
     contactoRef.current = contacto
   }, [contacto])
 
-  axios.defaults.baseURL = 'http://localhost:8000'
+  axios.defaults.baseURL = API_BASE_URL
 
   // Cargar mensajes desde localStorage o API
   useEffect(() => {

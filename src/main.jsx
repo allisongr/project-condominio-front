@@ -5,6 +5,7 @@ import Pusher from 'pusher-js'
 import axios from 'axios'
 import './index.css'
 import App from './App.jsx'
+import API_BASE_URL from './config/api'
 
 // Configure axios with token
 const token = localStorage.getItem('token')
@@ -31,7 +32,7 @@ window.Echo = new Echo({
     encrypted: false,
     disableStats: true,
     enabledTransports: ['ws'],
-    authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
+    authEndpoint: `${API_BASE_URL}/api/broadcasting/auth`,
     auth: {
         headers: {
             'X-Usuario-Id': usuario?.id || '',
