@@ -84,7 +84,6 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
         params: {
           id_depa: contacto.depa,
           contacto_id: contacto.id,
-          usuario_id: usuarioActual.id,
           per_page: 200,
         },
         timeout: 5000,
@@ -196,7 +195,6 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
 
       // Enviar al backend
       const response = await axios.post('/api/chat/send', {
-        remitente_id: usuarioActual.id,
         destinatario_id: contacto.id,
         id_depa: contacto.depa,
         contenido: mensajeTexto,

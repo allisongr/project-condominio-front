@@ -2,21 +2,18 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
-import axios from 'axios'
+
+// IMPORTANTE: Cargar axiosConfig PRIMERO para activar interceptores globales
+import './config/axiosConfig'
+
 import './index.css'
 import App from './App.jsx'
 import API_BASE_URL from './config/api'
 
-// Configure axios with token
-const token = localStorage.getItem('token')
 const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
 
-if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-}
-
 if (usuario?.id) {
-    axios.defaults.headers.common['X-Usuario-Id'] = usuario.id
+    console.log('✅ Usuario recuperado del localStorage:', usuario.id)
 }
 
 // Configure Pusher client for Laravel Reverb

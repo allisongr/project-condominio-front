@@ -26,10 +26,6 @@ export default function Login({ onLoginSuccess }) {
       const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
         email,
         password,
-      }, {
-        headers: {
-          'User-Agent': navigator.userAgent
-        }
       })
 
       // Guardar usuario en localStorage

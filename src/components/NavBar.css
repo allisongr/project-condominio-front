@@ -56,7 +56,29 @@
   color: #333;
 }
 
+.nav-menu .nav-link {
+  background: none;
+  border: none;
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.nav-menu .nav-link:hover {
+  color: #333;
+}
+
 .nav-menu li.active a {
+  background: #d4edda;
+  color: #155724;
+}
+
+.nav-menu li.active .nav-link {
   background: #d4edda;
   color: #155724;
 }
@@ -199,6 +221,32 @@
 .logout-btn:hover {
   background: #f5f5f5;
   color: #333;
+}
+
+.dropdown-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 14px;
+  transition: all 0.2s;
+  justify-content: flex-start;
+}
+
+.dropdown-btn:hover {
+  background: #f5f5f5;
+  color: #2d7a6a;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 4px 0;
 }
 
 /* Notification container */

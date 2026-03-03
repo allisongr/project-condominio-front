@@ -174,7 +174,6 @@ export default function ChatApp({ usuario, onLogout }) {
           params: {
             id_depa: contacto.depa,
             contacto_id: contacto.id,
-            usuario_id: usuario.id,
             per_page: 1
           }
         })
@@ -213,11 +212,7 @@ export default function ChatApp({ usuario, onLogout }) {
   const loadContactos = async () => {
     try {
       setIsLoadingContactos(true)
-      const response = await axios.get('/api/usuarios/contactos', {
-        params: {
-          usuario_actual_id: usuario.id
-        }
-      })
+      const response = await axios.get('/api/usuarios/contactos')
       let contactosData = response.data || []
       contactosData = contactosData.filter(c => c.id !== usuario.id)
       
@@ -249,6 +244,7 @@ export default function ChatApp({ usuario, onLogout }) {
         unreadMessages={unreadMessages}
         onNotificationClick={handleNotificationClick}
         onNotificationDropdownOpen={handleNotificationDropdownOpen}
+        isAdmin={usuario.admin}
       />
       
       <div className="chat-container-main">
