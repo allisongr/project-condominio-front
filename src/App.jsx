@@ -54,7 +54,7 @@ function AppContent() {
         <Route
           path="/chat"
           element={
-            usuario && !usuario.admin ? (
+            usuario ? (
               <ChatApp usuario={usuario} onLogout={handleLogout} />
             ) : (
               <Navigate to="/login" replace />

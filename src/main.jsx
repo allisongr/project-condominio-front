@@ -2,21 +2,22 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import Echo from 'laravel-echo'
 import Pusher from 'pusher-js'
-import axios from 'axios'
+
+// IMPORTANTE: Cargar axiosConfig PRIMERO para activar interceptores globales
+import './config/axiosConfig'
+
 import './index.css'
 import App from './App.jsx'
+import API_BASE_URL from './config/api'
 
-// Configure axios with token
-const token = localStorage.getItem('token')
 const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
 
-if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+if (usuario?.id) {
+    console.log('✅ Usuario recuperado del localStorage:', usuario.id)
 }
 
-if (usuario?.id) {
-    axios.defaults.headers.common['X-Usuario-Id'] = usuario.id
-}
+const wsHost = window.location.hostname
+const wsPort = 8080
 
 // Configure Pusher client for Laravel Reverb
 window.Pusher = Pusher
@@ -25,21 +26,26 @@ window.Echo = new Echo({
     broadcaster: 'pusher',
     key: 'websocket-key',
     cluster: 'mt1',
-    wsHost: 'localhost',
-    wsPort: 8080,
+    wsHost: wsHost,
+    wsPort: wsPort,
     forceTLS: false,
     encrypted: false,
     disableStats: true,
     enabledTransports: ['ws'],
-    authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
+    authEndpoint: `${API_BASE_URL}/api/broadcasting/auth`,
     auth: {
         headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'X-Usuario-Id': usuario?.id || '',
         }
     }
 })
 
-console.log('Echo WebSocket client initialized with Reverb on localhost:8080')
+console.group('🔌 WebSocket Configuration')
+console.log('WS Host:', wsHost)
+console.log('WS Port:', wsPort)
+console.log('WS URL:', `ws://${wsHost}:${wsPort}`)
+console.groupEnd()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -3,6 +3,7 @@ import { FiMoreVertical, FiSend } from 'react-icons/fi'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { TransitionGroup, CSSTransition } from 'react-transition-group'
+import API_BASE_URL from '../config/api'
 import './ChatWindow.css'
 import './ChatWindowTransitions.css'
 import MessageBubble from './MessageBubble'
@@ -27,7 +28,7 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
     contactoRef.current = contacto
   }, [contacto])
 
-  axios.defaults.baseURL = 'http://localhost:8000'
+  axios.defaults.baseURL = API_BASE_URL
 
   // Cargar mensajes desde localStorage o API
   useEffect(() => {
@@ -83,10 +84,9 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
         params: {
           id_depa: contacto.depa,
           contacto_id: contacto.id,
-          usuario_id: usuarioActual.id,
           per_page: 200,
         },
-        timeout: 5000,
+        timeout: 30000,
       })
       if (response.data && Array.isArray(response.data)) {
         setMensajes(response.data)
@@ -195,7 +195,6 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
 
       // Enviar al backend
       const response = await axios.post('/api/chat/send', {
-        remitente_id: usuarioActual.id,
         destinatario_id: contacto.id,
         id_depa: contacto.depa,
         contenido: mensajeTexto,
