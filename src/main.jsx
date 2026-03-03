@@ -16,6 +16,9 @@ if (usuario?.id) {
     console.log('✅ Usuario recuperado del localStorage:', usuario.id)
 }
 
+const wsHost = window.location.hostname
+const wsPort = 8080
+
 // Configure Pusher client for Laravel Reverb
 window.Pusher = Pusher
 
@@ -23,8 +26,8 @@ window.Echo = new Echo({
     broadcaster: 'pusher',
     key: 'websocket-key',
     cluster: 'mt1',
-    wsHost: 'localhost',
-    wsPort: 8080,
+    wsHost: wsHost,
+    wsPort: wsPort,
     forceTLS: false,
     encrypted: false,
     disableStats: true,
@@ -32,12 +35,17 @@ window.Echo = new Echo({
     authEndpoint: `${API_BASE_URL}/api/broadcasting/auth`,
     auth: {
         headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'X-Usuario-Id': usuario?.id || '',
         }
     }
 })
 
-console.log('Echo WebSocket client initialized with Reverb on localhost:8080')
+console.group('🔌 WebSocket Configuration')
+console.log('WS Host:', wsHost)
+console.log('WS Port:', wsPort)
+console.log('WS URL:', `ws://${wsHost}:${wsPort}`)
+console.groupEnd()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { FiX, FiSmartphone, FiLogOut } from 'react-icons/fi'
+import { FiX, FiSmartphone, FiLogOut, FiTrash2 } from 'react-icons/fi'
 import API_BASE_URL from '../config/api'
 import './DeviceManagement.css'
 
@@ -9,6 +9,7 @@ export default function DeviceManagement({ onClose }) {
   const [devices, setDevices] = useState([])
   const [loading, setLoading] = useState(true)
   const [loggingOutAll, setLoggingOutAll] = useState(false)
+  const [deletingDevice, setDeletingDevice] = useState(null)
 
   useEffect(() => {
     loadDevices()
@@ -60,6 +61,32 @@ export default function DeviceManagement({ onClose }) {
       toast.error('Error al cerrar sesión en todos los dispositivos')
     } finally {
       setLoggingOutAll(false)
+    }
+  }
+
+  const handleDeleteDevice = async (deviceId, deviceName) => {
+    if (!window.confirm(`¿Eliminar el dispositivo "${deviceName}"?`)) {
+      return
+    }
+
+    try {
+      setDeletingDevice(deviceId)
+      const response = await axios.delete(`${API_BASE_URL}/api/auth/devices/${deviceId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+
+      if (response.data.success) {
+        setDevices(devices.filter(d => d.id !== deviceId))
+        toast.success('Dispositivo eliminado exitosamente')
+      }
+    } catch (error) {
+      console.error('Error al eliminar dispositivo:', error)
+      const errorMessage = error.response?.data?.message || 'Error al eliminar dispositivo'
+      toast.error(errorMessage)
+    } finally {
+      setDeletingDevice(null)
     }
   }
 
@@ -126,6 +153,18 @@ export default function DeviceManagement({ onClose }) {
                           </p>
                         )}
                       </div>
+                    </div>
+                    <div className="device-actions">
+                      {!device.is_current && (
+                        <button
+                          className="btn-delete-device"
+                          onClick={() => handleDeleteDevice(device.id, device.nombre)}
+                          disabled={deletingDevice === device.id}
+                          title="Eliminar dispositivo"
+                        >
+                          <FiTrash2 size={18} />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

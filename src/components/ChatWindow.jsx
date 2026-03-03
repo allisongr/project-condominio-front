@@ -86,7 +86,7 @@ export default function ChatWindow({ contacto, usuarioActual, onMessageSent }) {
           contacto_id: contacto.id,
           per_page: 200,
         },
-        timeout: 5000,
+        timeout: 30000,
       })
       if (response.data && Array.isArray(response.data)) {
         setMensajes(response.data)
