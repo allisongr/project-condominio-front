@@ -148,6 +148,34 @@
   text-decoration: underline;
 }
 
+.forgot-password-link {
+  text-align: right;
+  margin-top: -12px;
+  margin-bottom: 8px;
+}
+
+.btn-forgot-password {
+  background: none;
+  border: none;
+  color: #2d7a6a;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  padding: 0;
+  display: inline-block;
+}
+
+.btn-forgot-password:hover {
+  color: #4a9b7f;
+  text-decoration: underline;
+}
+
+.btn-forgot-password:active {
+  transform: scale(0.98);
+}
+
 @media (max-width: 600px) {
   .login-box {
     padding: 40px 24px;

@@ -4,6 +4,7 @@ import ChatApp from './pages/Chat'
 import Login from './pages/Login'
 import { AdminDashboard } from './pages/Admin'
 import { VerifyEmail } from './pages/VerifyEmail'
+import PasswordRecovery from './pages/PasswordRecovery'
 import Toast from './components/Toast'
 import './App.css'
 
@@ -51,6 +52,7 @@ function AppContent() {
           }
         />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/reset-password" element={<PasswordRecovery />} />
         <Route
           path="/chat"
           element={
