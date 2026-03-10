@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { CSSTransition } from 'react-transition-group'
 import LoadingButton from '../../components/LoadingButton'
 import logoCompleto from '../../assets/imgs/logo-completo.jpg'
+import API_BASE_URL from '../../config/api'
 import './Login.css'
 import './LoginTransitions.css'
 
@@ -24,7 +25,7 @@ export default function Login({ onLoginSuccess }) {
     const loadingToastId = toast.loading('Iniciando sesión...')
 
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/login', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
         email,
         password,
       })
@@ -32,6 +33,7 @@ export default function Login({ onLoginSuccess }) {
       // Guardar usuario en localStorage
       localStorage.setItem('usuario', JSON.stringify(response.data.usuario))
       localStorage.setItem('token', response.data.token)
+      localStorage.setItem('loginTime', new Date().toISOString())
 
       toast.dismiss(loadingToastId)
       toast.success('¡Bienvenido! Iniciando sesión...')

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { FiCheckCircle, FiXCircle, FiLoader } from 'react-icons/fi'
+import API_BASE_URL from '../../config/api'
 import './VerifyEmail.css'
 import logoCompleto from '../../assets/imgs/logo-completo.jpg'
 
@@ -26,7 +27,7 @@ export default function VerifyEmail() {
         return
       }
 
-      const response = await axios.post('http://localhost:8000/api/auth/verify-email', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/verify-email`, {
         token,
       })
 
