@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { CSSTransition } from 'react-transition-group'
@@ -9,6 +10,7 @@ import './Login.css'
 import './LoginTransitions.css'
 
 export default function Login({ onLoginSuccess }) {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -97,6 +99,16 @@ export default function Login({ onLoginSuccess }) {
               required
               placeholder="••••••••"
             />
+          </div>
+
+          <div className="forgot-password-link">
+            <button
+              type="button"
+              onClick={() => navigate('/reset-password')}
+              className="btn-forgot-password"
+            >
+              ¿Olvidé mi contraseña?
+            </button>
           </div>
 
           <LoadingButton
